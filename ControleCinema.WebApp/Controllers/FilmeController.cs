@@ -1,8 +1,7 @@
-﻿using ControleCinema.Dominio.Extensions;
+﻿using ControleCinema.Dominio.Compartilhado;
+using ControleCinema.Dominio.Extensions;
 using ControleCinema.Dominio.ModuloFilme;
-using ControleCinema.Infra.Orm.Compartilhado;
-using ControleCinema.Infra.Orm.ModuloFilme;
-using ControleCinema.Infra.Orm.ModuloGenero;
+using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +11,17 @@ namespace ControleCinema.WebApp.Controllers;
 
 public class FilmeController : Controller
 {
+    private readonly IRepositorio<Filme> repositorioFilme;
+    private readonly IRepositorio<Genero> repositorioGenero;
+
+    public FilmeController(IRepositorio<Filme> repositorioFilme, IRepositorio<Genero> repositorioGenero)
+    {
+        this.repositorioFilme = repositorioFilme;
+        this.repositorioGenero = repositorioGenero;
+    }
 
     public IActionResult Listar()
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioFilme = new RepositorioFilmeEmOrm(db);
-
         var filmes = repositorioFilme.SelecionarTodos();
 
         var listarFilmesVm = filmes
@@ -37,9 +41,6 @@ public class FilmeController : Controller
 
     public IActionResult Inserir()
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioGenero = new RepositorioGeneroEmOrm(db);
-
         var generosDeFilme = repositorioGenero.SelecionarTodos();
 
         var inserirFilmeVm = new InserirFilmeViewModel
@@ -54,10 +55,6 @@ public class FilmeController : Controller
     [HttpPost]
     public IActionResult Inserir(InserirFilmeViewModel inserirFilmeVm)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioGenero = new RepositorioGeneroEmOrm(db);
-        var repositorioFilme = new RepositorioFilmeEmOrm(db);
-
         if (!ModelState.IsValid)
         {
             var generosDeFilme = repositorioGenero.SelecionarTodos();
@@ -92,10 +89,6 @@ public class FilmeController : Controller
 
     public IActionResult Editar(int id)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioGenero = new RepositorioGeneroEmOrm(db);
-        var repositorioFilme = new RepositorioFilmeEmOrm(db);
-
         var filme = repositorioFilme.SelecionarPorId(id);
 
         if (filme is null)
@@ -120,10 +113,6 @@ public class FilmeController : Controller
     [HttpPost]
     public IActionResult Editar(EditarFilmeViewModel editarFilmeVm)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioGenero = new RepositorioGeneroEmOrm(db);
-        var repositorioFilme = new RepositorioFilmeEmOrm(db);
-
         if (!ModelState.IsValid)
         {
             var generosDeFilme = repositorioGenero.SelecionarTodos();
@@ -157,9 +146,6 @@ public class FilmeController : Controller
 
     public IActionResult Excluir(int id)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioFilme = new RepositorioFilmeEmOrm(db);
-
         var filme = repositorioFilme.SelecionarPorId(id);
 
         if (filme is null)
@@ -180,9 +166,6 @@ public class FilmeController : Controller
     [HttpPost]
     public IActionResult Excluir(DetalhesFilmeViewModel detalhesFilmeViewModel)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioFilme = new RepositorioFilmeEmOrm(db);
-
         var filme = repositorioFilme.SelecionarPorId(detalhesFilmeViewModel.Id);
 
         if (filme is null)
@@ -201,9 +184,6 @@ public class FilmeController : Controller
 
     public IActionResult Detalhes(int id)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioFilme = new RepositorioFilmeEmOrm(db);
-
         var filme = repositorioFilme.SelecionarPorId(id);
 
         if (filme is null)

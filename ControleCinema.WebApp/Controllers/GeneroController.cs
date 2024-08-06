@@ -1,4 +1,5 @@
-﻿using ControleCinema.Dominio.ModuloGenero;
+﻿using ControleCinema.Dominio.Compartilhado;
+using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.Infra.Orm.Compartilhado;
 using ControleCinema.Infra.Orm.ModuloGenero;
 using ControleCinema.WebApp.Extensions;
@@ -9,11 +10,15 @@ namespace ControleCinema.WebApp.Controllers;
 
 public class GeneroController : Controller
 {
+    private readonly IRepositorio<Genero> repositorioGenero;
+
+    public GeneroController(IRepositorio<Genero> repositorioGenero)
+    {
+        this.repositorioGenero = repositorioGenero;
+    }
+
     public IActionResult Listar()
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioGenero = new RepositorioGeneroEmOrm(db);
-
         var generos = repositorioGenero.SelecionarTodos();
 
         var listarGenerosVm = generos
@@ -39,9 +44,6 @@ public class GeneroController : Controller
         if (!ModelState.IsValid)
             return View(inserirGeneroVm);
 
-        var db = new ControleCinemaDbContext();
-        var repositorioGenero = new RepositorioGeneroEmOrm(db);
-
         var genero = new Genero()
         {
             Descricao = inserirGeneroVm.Descricao
@@ -60,9 +62,6 @@ public class GeneroController : Controller
 
     public IActionResult Editar(int id)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioGenero = new RepositorioGeneroEmOrm(db);
-
         var funcionario = repositorioGenero.SelecionarPorId(id);
 
         if (funcionario is null)
@@ -83,9 +82,6 @@ public class GeneroController : Controller
         if (!ModelState.IsValid)
             return View(editarGeneroVm);
 
-        var db = new ControleCinemaDbContext();
-        var repositorioGenero = new RepositorioGeneroEmOrm(db);
-
         var genero = repositorioGenero.SelecionarPorId(editarGeneroVm.Id);
 
         genero!.Descricao = editarGeneroVm.Descricao;
@@ -103,9 +99,6 @@ public class GeneroController : Controller
 
     public IActionResult Excluir(int id)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioGenero = new RepositorioGeneroEmOrm(db);
-
         var genero = repositorioGenero.SelecionarPorId(id);
 
         if (genero is null)
@@ -123,9 +116,6 @@ public class GeneroController : Controller
     [HttpPost]
     public IActionResult Excluir(DetalhesGeneroViewModel detalhesGeneroViewModel)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioGenero = new RepositorioGeneroEmOrm(db);
-
         var genero = repositorioGenero.SelecionarPorId(detalhesGeneroViewModel.Id);
 
         if (genero is null)
@@ -144,9 +134,6 @@ public class GeneroController : Controller
 
     public IActionResult Detalhes(int id)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioGenero = new RepositorioGeneroEmOrm(db);
-
         var genero = repositorioGenero.SelecionarPorId(id);
 
         if (genero is null)

@@ -1,6 +1,5 @@
-﻿using ControleCinema.Dominio.ModuloSala;
-using ControleCinema.Infra.Orm.Compartilhado;
-using ControleCinema.Infra.Orm.ModuloSala;
+﻿using ControleCinema.Dominio.Compartilhado;
+using ControleCinema.Dominio.ModuloSala;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +8,15 @@ namespace ControleCinema.WebApp.Controllers;
 
 public class SalaController : Controller
 {
+    private readonly IRepositorio<Sala> repositorioSala;
+
+    public SalaController(IRepositorio<Sala> repositorioSala)
+    {
+        this.repositorioSala = repositorioSala;
+    }
+
     public IActionResult Listar()
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioSala = new RepositorioSalaEmOrm(db);
-
         var salas = repositorioSala.SelecionarTodos();
 
         var listarSalasVm = salas
@@ -40,9 +43,6 @@ public class SalaController : Controller
         if (!ModelState.IsValid)
             return View(inserirSalaVm);
 
-        var db = new ControleCinemaDbContext();
-        var repositorioSala = new RepositorioSalaEmOrm(db);
-
         var sala = new Sala()
         {
             Numero = inserirSalaVm.Numero,
@@ -62,9 +62,6 @@ public class SalaController : Controller
 
     public IActionResult Editar(int id)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioSala = new RepositorioSalaEmOrm(db);
-
         var sala = repositorioSala.SelecionarPorId(id);
 
         if (sala is null)
@@ -86,9 +83,6 @@ public class SalaController : Controller
         if (!ModelState.IsValid)
             return View(editarSalaVm);
 
-        var db = new ControleCinemaDbContext();
-        var repositorioSala = new RepositorioSalaEmOrm(db);
-
         var sala = repositorioSala.SelecionarPorId(editarSalaVm.Id);
 
         sala!.Numero = editarSalaVm.Numero;
@@ -107,9 +101,6 @@ public class SalaController : Controller
 
     public IActionResult Excluir(int id)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioSala = new RepositorioSalaEmOrm(db);
-
         var sala = repositorioSala.SelecionarPorId(id);
 
         if (sala is null)
@@ -128,9 +119,6 @@ public class SalaController : Controller
     [HttpPost]
     public IActionResult Excluir(DetalhesSalaViewModel detalhesSalaViewModel)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioSala = new RepositorioSalaEmOrm(db);
-
         var sala = repositorioSala.SelecionarPorId(detalhesSalaViewModel.Id);
 
         if (sala is null)
@@ -149,9 +137,6 @@ public class SalaController : Controller
 
     public IActionResult Detalhes(int id)
     {
-        var db = new ControleCinemaDbContext();
-        var repositorioSala = new RepositorioSalaEmOrm(db);
-
         var sala = repositorioSala.SelecionarPorId(id);
 
         if (sala is null)
