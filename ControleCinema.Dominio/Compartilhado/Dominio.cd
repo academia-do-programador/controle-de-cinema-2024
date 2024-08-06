@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
   <Class Name="ControleCinema.Dominio.ModuloGenero.Genero">
-    <Position X="3.25" Y="1.25" Width="1.75" />
+    <Position X="3.75" Y="1.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ModuloGenero\Genero.cs</FileName>
@@ -14,49 +14,42 @@
       <FileName>ModuloFuncionario\Funcionario.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ControleCinema.Dominio.MoguloFilme.Filme">
-    <Position X="3" Y="5" Width="2" />
-    <AssociationLine Name="Genero" Type="ControleCinema.Dominio.ModuloGenero.Genero" FixedToPoint="true">
-      <Path>
-        <Point X="4.125" Y="5" />
-        <Point X="4.125" Y="3.074" />
-      </Path>
-    </AssociationLine>
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAIAAAAAQAAAAAIAAAAAABA=</HashCode>
-      <FileName>MoguloFilme\Filme.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Genero" />
-    </ShowAsAssociation>
-  </Class>
   <Class Name="ControleCinema.Dominio.ModuloSessao.Sessao">
     <Position X="7.5" Y="5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAIAAAACAAAABAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAKAEAACAAAABAAAAAAAAggAgAAAAAAAIAABAg=</HashCode>
       <FileName>ModuloSessao\Sessao.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Filme" />
       <Property Name="Sala" />
+      <Property Name="Filme" />
     </ShowAsAssociation>
   </Class>
   <Class Name="ControleCinema.Dominio.ModuloSala.Sala">
-    <Position X="12.25" Y="5" Width="1.75" />
+    <Position X="11.75" Y="5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAABAAA=</HashCode>
       <FileName>ModuloSala\Sala.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ControleCinema.Dominio.ModuloSessao.Ingresso">
-    <Position X="8" Y="1" Width="1.5" />
+    <Position X="7.5" Y="1.75" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAQAAAAAAAAAAAAAAAAAAEACAQAAAAAAAAA=</HashCode>
+      <HashCode>gAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAQAAAAAAAAA=</HashCode>
       <FileName>ModuloSessao\Ingresso.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Funcionario" />
       <Property Name="Sessao" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ControleCinema.Dominio.ModuloFilme.Filme">
+    <Position X="3.75" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAIAAAAAQAAAAAIAAAAAABA=</HashCode>
+      <FileName>ModuloFilme\Filme.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Genero" />
     </ShowAsAssociation>
   </Class>
   <Font Name="Segoe UI" Size="10" />

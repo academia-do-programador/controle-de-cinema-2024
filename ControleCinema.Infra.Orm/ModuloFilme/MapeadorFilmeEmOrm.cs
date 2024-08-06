@@ -17,11 +17,11 @@ public class MapeadorFilmeEmOrm : IEntityTypeConfiguration<Filme>
         fBuilder.Property(f => f.Titulo)
             .IsRequired()
             .HasColumnType("varchar(200)");
-        
+
         fBuilder.Property(f => f.Duracao)
             .IsRequired()
             .HasColumnType("int");
-        
+
         fBuilder.Property(f => f.Lancamento)
             .IsRequired()
             .HasColumnType("bit");
