@@ -12,7 +12,7 @@ public class Program
 
         app.UseStaticFiles();
 
-        app.MapControllerRoute("default", "{controller}/{action}/{id:int?}");
+        app.MapControllerRoute("default", "{controller=Inicio}/{action=Index}/{id:int?}");
 
         app.Run();
     }
