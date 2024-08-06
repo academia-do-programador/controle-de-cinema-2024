@@ -1,0 +1,50 @@
+﻿@model IEnumerable<ListarGeneroViewModel>
+
+@{
+    ViewBag.Title = "Listagem de Gêneros de Filme";
+    MensagemViewModel? mensagem = ViewBag.Mensagem ?? null;
+}
+
+<div class="col">
+    <partial name="_Mensagem" model="mensagem"></partial>
+    
+    <a class="btn btn-primary px-4 mt-3" href="/genero/inserir">
+        <i class="bi bi-circle-add"></i>
+        Inserir Novo Gênero de Filme
+    </a>
+
+    <div class="row gap-2 my-3 my-xl-5">
+        @foreach (var generoVm in Model)
+        {
+            <div class="card col-lg-4 col-xl-3">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h5 class="p-0">@generoVm.Id</h5>
+
+                    <div class="text-end d-flex align-items-center gap-3">
+                        <a
+                            title="Detalhes"
+                            class="text-info-emphasis fs-5"
+                            href="/genero/detalhes/@generoVm.Id">
+                            <i class="bi bi-search"></i>
+                        </a>
+                        <a
+                            title="Editar"
+                            class="text-info-emphasis fs-5"
+                            href="/genero/editar/@generoVm.Id">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+                        <a
+                            title="Excluir"
+                            class="text-info-emphasis fs-5" href="/genero/excluir/@generoVm.Id">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">@generoVm.Descricao</h5>
+                </div>
+            </div>
+        }
+    </div>
+</div>
