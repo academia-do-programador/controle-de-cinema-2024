@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Página Inicial";
+
+    IEnumerable<AgrupamentoSessoesPorFilmeViewModel> agrupamentosVm = ViewBag.Agrupamentos;
+}
+
+<div class="col">
+    <div class="row my-3 my-xl-5">
+        <div class="col-lg-6">
+            <img class="img-fluid" src="~/img/home_logo.png" alt="Pessoas assistindo um filme"/>
+        </div>
+        <div class="col d-grid gap-1">
+            <h2 class="display-2 fw-bold text-primary">Bem-vindo(a)!</h2>
+            
+            <p class="fs-4 fw-semibold">
+                Descubra uma nova dimensão de entretenimento, onde cada sessão é uma experiência inesquecível. Oferecemos uma seleção diversificada de filmes, desde os lançamentos mais aguardados até clássicos atemporais, tudo em ambientes confortáveis e modernos.
+            </p>
+        </div>
+    </div>
+
+    <section>
+        <h3 class="display-4 text-primary fw-semibold">Sessões Disponíveis</h3>
+        <hr />
+        
+        <partial name="../Sessao/Agrupar" model="agrupamentosVm"></partial>
+    </section>
+
+</div>
