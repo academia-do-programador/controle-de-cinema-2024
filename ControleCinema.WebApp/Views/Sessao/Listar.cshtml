@@ -1,0 +1,17 @@
+﻿@model IEnumerable<AgrupamentoSessoesPorFilmeViewModel>
+
+@{
+    ViewBag.Title = "Listagem de Sessões";
+    MensagemViewModel? mensagem = ViewBag.Mensagem ?? null;
+}
+
+<div class="col">
+    <partial name="_Mensagem" model="mensagem"></partial>
+
+    <a class="btn btn-primary px-4 mt-3" href="/sessao/inserir">
+        <i class="bi bi-circle-add"></i>
+        Inserir Nova Sessão
+    </a>
+
+    <partial name="Agrupar" model="Model"></partial>
+</div>

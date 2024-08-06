@@ -1,0 +1,41 @@
+﻿@model InserirFuncionarioViewModel
+
+@{
+    ViewBag.Title = "Inserir Novo Funcionário";
+}
+
+<div class="col">
+    <div class="row gap-3 my-3 my-xl-5">
+        <form class="col-lg-6 d-grid gap-3 fs-5" asp-action="Inserir">
+            <div>
+                <label class="control-label fw-semibold mb-1">Nome</label>
+                <input class="form-control mb-1" asp-for="Nome"/>
+                <span class="text-danger fs-6" asp-validation-for="Nome"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-semibold mb-1">Login</label>
+                <input class="form-control mb-1" asp-for="Login"/>
+                <span class="text-danger fs-6" asp-validation-for="Login"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-semibold mb-1">Senha</label>
+                <input class="form-control mb-1" type="password" asp-for="Senha"/>
+                <span class="text-danger fs-6" asp-validation-for="Senha"></span>
+            </div>
+
+            <div class="d-grid gap-2 d-md-block mt-4">
+                <button class="btn btn-primary px-5">
+                    <i class="bi bi-floppy-fill me-1"></i>
+                    Gravar
+                </button>
+
+                <a class="btn btn-outline-primary px-5" href="/funcionario/listar">
+                    <i class="bi bi-arrow-return-left me-1"></i>
+                    Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -32,4 +32,40 @@
       <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\js\bootstrap.min.js.map" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="Views\Filme\Detalhes.cshtml" />
+      <None Include="Views\Filme\Editar.cshtml" />
+      <None Include="Views\Filme\Excluir.cshtml" />
+      <None Include="Views\Filme\Inserir.cshtml" />
+      <None Include="Views\Filme\Listar.cshtml" />
+      <None Include="Views\Filme\_Informacoes.cshtml" />
+      <None Include="Views\Funcionario\Detalhes.cshtml" />
+      <None Include="Views\Funcionario\Editar.cshtml" />
+      <None Include="Views\Funcionario\Excluir.cshtml" />
+      <None Include="Views\Funcionario\Inserir.cshtml" />
+      <None Include="Views\Funcionario\Listar.cshtml" />
+      <None Include="Views\Funcionario\_Informacoes.cshtml" />
+      <None Include="Views\Genero\Detalhes.cshtml" />
+      <None Include="Views\Genero\Editar.cshtml" />
+      <None Include="Views\Genero\Excluir.cshtml" />
+      <None Include="Views\Genero\Inserir.cshtml" />
+      <None Include="Views\Genero\Listar.cshtml" />
+      <None Include="Views\Genero\_Informacoes.cshtml" />
+      <None Include="Views\Inicio\Index.cshtml" />
+      <None Include="Views\Sala\Detalhes.cshtml" />
+      <None Include="Views\Sala\Editar.cshtml" />
+      <None Include="Views\Sala\Excluir.cshtml" />
+      <None Include="Views\Sala\Inserir.cshtml" />
+      <None Include="Views\Sala\Listar.cshtml" />
+      <None Include="Views\Sala\_Informacoes.cshtml" />
+      <None Include="Views\Sessao\Agrupar.cshtml" />
+      <None Include="Views\Sessao\ComprarIngresso.cshtml" />
+      <None Include="Views\Sessao\Detalhes.cshtml" />
+      <None Include="Views\Sessao\Encerrar.cshtml" />
+      <None Include="Views\Sessao\Excluir.cshtml" />
+      <None Include="Views\Sessao\Inserir.cshtml" />
+      <None Include="Views\Sessao\Listar.cshtml" />
+      <None Include="Views\Sessao\_Informacoes.cshtml" />
+    </ItemGroup>
+
 </Project>
