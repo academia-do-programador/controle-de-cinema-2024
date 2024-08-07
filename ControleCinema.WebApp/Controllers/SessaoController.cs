@@ -31,22 +31,7 @@ public class SessaoController : Controller
         var agrupamentos = repositorioSessao.ObterSessoesAgrupadasPorFilme();
 
         var agrupamentosSessoesVm = agrupamentos
-            .Select(grp => new AgrupamentoSessoesPorFilmeViewModel
-            {
-                Filme = grp.Key,
-                Sessoes = grp.Select(s => new ListarSessaoViewModel
-                {
-                    Id = s.Id,
-                    Filme = grp.Key,
-                    Sala = s.Sala.Numero.ToString(),
-                    IngressosDisponiveis = s.ObterQuantidadeIngressosDisponiveis(),
-                    Inicio = s.Inicio.ToString("dd/MM/yyyy HH:mm"),
-                    Encerrada = s.Encerrada ? "Encerrada" : "Disponível"
-                })
-                .OrderBy(s => s.Encerrada)
-                .ThenBy(s => s.Inicio)
-            });
-
+            .Select(MapearAgrupamentoSessoes);
         
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
@@ -118,16 +103,7 @@ public class SessaoController : Controller
         if (sessao is null)
             return MensagemRegistroNaoEncontrado(id);
         
-        var detalhesSessaoViewModel = new DetalhesSessaoViewModel
-        {
-            Id = sessao.Id,
-            Sala = sessao.Sala.Numero.ToString(),
-            Filme = sessao.Filme.Titulo,
-            Inicio = sessao.Inicio.ToString("dd/MM/yyyy HH:mm"),
-            Encerrada = sessao.Encerrada ? "Encerrada" : "Disponível",
-            NumeroMaximoIngressos = sessao.NumeroMaximoIngressos,
-            IngressosDisponiveis= sessao.ObterQuantidadeIngressosDisponiveis(),
-        };
+        var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
         
         return View(detalhesSessaoViewModel);
     }
@@ -160,20 +136,11 @@ public class SessaoController : Controller
         if (sessao is null)
             return MensagemRegistroNaoEncontrado(id);
         
-        var detalhesSessaoViewModel = new DetalhesSessaoViewModel
-        {
-            Id = sessao.Id,
-            Sala = sessao.Sala.Numero.ToString(),
-            Filme = sessao.Filme.Titulo,
-            Inicio = sessao.Inicio.ToString("dd/MM/yyyy HH:mm"),
-            Encerrada = sessao.Encerrada ? "Encerrada" : "Disponível",
-            NumeroMaximoIngressos = sessao.NumeroMaximoIngressos,
-            IngressosDisponiveis= sessao.ObterQuantidadeIngressosDisponiveis()
-        };
+        var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
         
         return View(detalhesSessaoViewModel);
     }
-    
+  
     [HttpPost]
     public IActionResult Excluir(DetalhesSessaoViewModel detalhesSessaoViewModel)
     {
@@ -200,16 +167,7 @@ public class SessaoController : Controller
         if (sessao is null)
             return MensagemRegistroNaoEncontrado(id);
         
-        var detalhesSessaoViewModel = new DetalhesSessaoViewModel()
-        {
-            Id = sessao.Id,
-            Sala = sessao.Sala.Numero.ToString(),
-            Filme = sessao.Filme.Titulo,
-            Inicio = sessao.Inicio.ToString("dd/MM/yyyy HH:mm"),
-            Encerrada = sessao.Encerrada ? "Encerrada" : "Disponível",
-            NumeroMaximoIngressos = sessao.NumeroMaximoIngressos,
-            IngressosDisponiveis = sessao.ObterQuantidadeIngressosDisponiveis(),
-        };
+        var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
 
         return View(detalhesSessaoViewModel);
     }
@@ -222,16 +180,7 @@ public class SessaoController : Controller
         if (sessao is null)
             return MensagemRegistroNaoEncontrado(id);
         
-        var detalhesSessaoViewModel = new DetalhesSessaoViewModel()
-        {
-            Id = sessao.Id,
-            Sala = sessao.Sala.Numero.ToString(),
-            Filme = sessao.Filme.Titulo,
-            Inicio = sessao.Inicio.ToString("dd/MM/yyyy HH:mm"),
-            Encerrada = sessao.Encerrada ? "Encerrada" : "Disponível",
-            NumeroMaximoIngressos = sessao.NumeroMaximoIngressos,
-            IngressosDisponiveis = sessao.ObterQuantidadeIngressosDisponiveis(),
-        };
+        var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
 
         var comprarIngressoVm = new ComprarIngressoViewModel
         {
@@ -278,4 +227,38 @@ public class SessaoController : Controller
 
         return RedirectToAction(nameof(Listar));
     }
+    
+    private static AgrupamentoSessoesPorFilmeViewModel MapearAgrupamentoSessoes(IGrouping<string, Sessao> grp)
+    {
+        return new AgrupamentoSessoesPorFilmeViewModel
+        {
+            Filme = grp.Key,
+            Sessoes = grp.Select(s => new ListarSessaoViewModel
+                {
+                    Id = s.Id,
+                    Filme = grp.Key,
+                    Sala = s.Sala.Numero.ToString(),
+                    IngressosDisponiveis = s.ObterQuantidadeIngressosDisponiveis(),
+                    Inicio = s.Inicio.ToString("dd/MM/yyyy HH:mm"),
+                    Encerrada = s.Encerrada ? "Encerrada" : "Disponível"
+                })
+                .OrderBy(s => s.Encerrada)
+                .ThenBy(s => s.Inicio)
+        };
+    }
+    
+    private static DetalhesSessaoViewModel MapearDetalhesSessao(Sessao sessao)
+    {
+        return new DetalhesSessaoViewModel
+        {
+            Id = sessao.Id,
+            Sala = sessao.Sala.Numero.ToString(),
+            Filme = sessao.Filme.Titulo,
+            Inicio = sessao.Inicio.ToString("dd/MM/yyyy HH:mm"),
+            Encerrada = sessao.Encerrada ? "Encerrada" : "Disponível",
+            NumeroMaximoIngressos = sessao.NumeroMaximoIngressos,
+            IngressosDisponiveis= sessao.ObterQuantidadeIngressosDisponiveis()
+        };
+    }
+
 }
