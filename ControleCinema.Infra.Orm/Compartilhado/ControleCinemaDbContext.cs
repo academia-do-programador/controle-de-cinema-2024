@@ -39,7 +39,11 @@ public class ControleCinemaDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
+        modelBuilder.ApplyConfiguration(new MapeadorGeneroEmOrm());
+        modelBuilder.ApplyConfiguration(new MapeadorFilmeEmOrm());
+        modelBuilder.ApplyConfiguration(new MapeadorSalaEmOrm());
+        modelBuilder.ApplyConfiguration(new MapeadorGeneroEmOrm());
+        modelBuilder.ApplyConfiguration(new MapeadorGeneroEmOrm());
         
         base.OnModelCreating(modelBuilder);
     }
