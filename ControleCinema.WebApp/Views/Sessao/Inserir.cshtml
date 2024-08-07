@@ -1,0 +1,51 @@
+﻿@model InserirSessaoViewModel
+
+@{
+    ViewBag.Title = "Inserir Nova Sessão";
+}
+
+<div class="col">
+    <div class="row gap-3 my-3 my-xl-5">
+        <form class="col-lg-6 d-grid gap-3 fs-5" asp-action="Inserir">
+            <div>
+                <label class="control-label fw-semibold mb-1">Filme</label>
+                <select class="form-select" asp-for="FilmeId" asp-items="Model.Filmes">
+                    <option disabled>Selecione um filme</option>
+                </select>
+                <span class="text-danger fs-6" asp-validation-for="FilmeId"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-semibold mb-1">Sala</label>
+                <select class="form-select" asp-for="SalaId" asp-items="Model.Salas">
+                    <option disabled>Selecione uma sala</option>
+                </select>
+                <span class="text-danger fs-6" asp-validation-for="SalaId"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-semibold mb-1">Quantidade de Ingressos Disponíveis</label>
+                <input class="form-control mb-1" type="number" min="1" value="1" asp-for="NumeroMaximoIngressos" />
+                <span class="text-danger fs-6" asp-validation-for="NumeroMaximoIngressos"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-semibold mb-1">Início da Sessão</label>
+                <input class="form-control mb-1" type="datetime-local" asp-for="Inicio" />
+                <span class="text-danger fs-6" asp-validation-for="Inicio"></span>
+            </div>
+
+            <div class="d-grid gap-2 d-md-block mt-4">
+                <button class="btn btn-primary px-5">
+                    <i class="bi bi-floppy-fill me-1"></i>
+                    Gravar
+                </button>
+
+                <a class="btn btn-outline-primary px-5" href="/sessao/listar">
+                    <i class="bi bi-arrow-return-left me-1"></i>
+                    Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

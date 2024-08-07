@@ -1,0 +1,23 @@
+﻿@model DetalhesSessaoViewModel
+
+@{
+    ViewBag.Title = "Detalhes da Sessão";
+}
+
+<div class="col">
+    <partial name="_Informacoes" model="Model"></partial>
+
+    <div class="d-grid gap-2 d-md-block mt-4">
+        @if (Model.Encerrada == "Disponível")
+        {
+            <a class="btn btn-primary px-5" href="/sessao/comprar-ingresso/@Model.Id">
+                <i class="bi bi-coin me-1"></i>
+                Comprar Ingresso
+            </a>
+        }
+        <a class="btn btn-outline-primary px-5" href="/sessao/listar">
+            <i class="bi bi-arrow-return-left me-1"></i>
+            Voltar
+        </a>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 ﻿using ControleCinema.Dominio.Compartilhado;
-using ControleCinema.Dominio.ModuloSala;
 using ControleCinema.Dominio.ModuloFilme;
+using ControleCinema.Dominio.ModuloSala;
 
 namespace ControleCinema.Dominio.ModuloSessao;
 
@@ -19,7 +19,7 @@ public class Sessao : EntidadeBase
         }
         set => _encerrada = value;
     }
-    
+
     public int NumeroMaximoIngressos { get; set; }
     public DateTime Inicio { get; set; }
     public List<Ingresso> Ingressos { get; set; }
@@ -36,7 +36,7 @@ public class Sessao : EntidadeBase
         NumeroMaximoIngressos = numeroMaximoIngressos;
         Inicio = inicio;
     }
- 
+
     public int[] ObterAssentosDisponiveis()
     {
         var assentosDisponiveis = Enumerable.Range(1, NumeroMaximoIngressos);
@@ -47,12 +47,12 @@ public class Sessao : EntidadeBase
             .Except(assentosOcupados)
             .ToArray();
     }
-    
+
     public int ObterQuantidadeIngressosDisponiveis()
     {
         return NumeroMaximoIngressos - Ingressos.Count;
     }
-    
+
     public Ingresso GerarIngresso(int assentoSelecionado, bool meiaEntrada)
     {
         var ingresso = new Ingresso(assentoSelecionado, meiaEntrada);

@@ -1,0 +1,42 @@
+﻿@model ComprarIngressoViewModel
+
+@{
+    ViewBag.Title = "Compra de Ingresso";    
+}
+
+<div class="col">
+    <div class="row gap-3 my-3 my-xl-5">
+        <form class="col-lg-6 d-grid gap-3 fs-5" asp-action="ComprarIngresso">
+            <label class="fs-4"><strong>Sessão:</strong> @Model.Sessao.Id</label>
+            <label class="fs-4"><strong>Filme:</strong> @Model.Sessao.Filme</label>
+
+            <div class="text-bg-primary p-3 rounded-4">
+                <label class="form-label fs-4"><strong>Entrada:</strong></label>
+                <div class="form-check">
+                    <input class="form-check-input mb-1" type="checkbox" asp-for="MeiaEntrada"/>
+                    <label class="form-check-label mb-1">Meia Entrada</label>
+                </div>
+            </div>
+
+            <div>
+                <label class="control-label fw-semibold mb-1">Assento</label>
+                <select class="form-select" asp-for="AssentoSelecionado" asp-items="Model.Assentos">
+                    <option disabled>Selecione um assento</option>
+                </select>
+                <span class="text-danger fs-6" asp-validation-for="AssentoSelecionado"></span>
+            </div>
+
+            <div class="d-grid gap-2 d-md-block mt-4">
+                <button class="btn btn-primary px-5">
+                    <i class="bi bi-coin me-1"></i>
+                    Confirmar Compra
+                </button>
+
+                <a class="btn btn-outline-primary px-5" href="/sessao/listar">
+                    <i class="bi bi-arrow-return-left me-1"></i>
+                    Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

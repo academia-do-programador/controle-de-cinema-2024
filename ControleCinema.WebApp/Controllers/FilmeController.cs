@@ -1,5 +1,4 @@
-﻿using ControleCinema.Dominio.Compartilhado;
-using ControleCinema.Dominio.Extensions;
+﻿using ControleCinema.Dominio.Extensions;
 using ControleCinema.Dominio.ModuloFilme;
 using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.WebApp.Extensions;
@@ -11,10 +10,10 @@ namespace ControleCinema.WebApp.Controllers;
 
 public class FilmeController : Controller
 {
-    private readonly IRepositorio<Filme> repositorioFilme;
-    private readonly IRepositorio<Genero> repositorioGenero;
+    private readonly IRepositorioFilme repositorioFilme;
+    private readonly IRepositorioGenero repositorioGenero;
 
-    public FilmeController(IRepositorio<Filme> repositorioFilme, IRepositorio<Genero> repositorioGenero)
+    public FilmeController(IRepositorioFilme repositorioFilme, IRepositorioGenero repositorioGenero)
     {
         this.repositorioFilme = repositorioFilme;
         this.repositorioGenero = repositorioGenero;

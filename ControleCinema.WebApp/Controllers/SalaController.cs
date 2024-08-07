@@ -1,5 +1,4 @@
-﻿using ControleCinema.Dominio.Compartilhado;
-using ControleCinema.Dominio.ModuloSala;
+﻿using ControleCinema.Dominio.ModuloSala;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,9 +7,9 @@ namespace ControleCinema.WebApp.Controllers;
 
 public class SalaController : Controller
 {
-    private readonly IRepositorio<Sala> repositorioSala;
+    private readonly IRepositorioSala repositorioSala;
 
-    public SalaController(IRepositorio<Sala> repositorioSala)
+    public SalaController(IRepositorioSala repositorioSala)
     {
         this.repositorioSala = repositorioSala;
     }

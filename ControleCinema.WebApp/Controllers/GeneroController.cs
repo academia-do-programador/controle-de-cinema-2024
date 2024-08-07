@@ -1,7 +1,4 @@
-﻿using ControleCinema.Dominio.Compartilhado;
-using ControleCinema.Dominio.ModuloGenero;
-using ControleCinema.Infra.Orm.Compartilhado;
-using ControleCinema.Infra.Orm.ModuloGenero;
+﻿using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +7,9 @@ namespace ControleCinema.WebApp.Controllers;
 
 public class GeneroController : Controller
 {
-    private readonly IRepositorio<Genero> repositorioGenero;
+    private readonly IRepositorioGenero repositorioGenero;
 
-    public GeneroController(IRepositorio<Genero> repositorioGenero)
+    public GeneroController(IRepositorioGenero repositorioGenero)
     {
         this.repositorioGenero = repositorioGenero;
     }
