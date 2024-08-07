@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ControleCinema.Infra.Orm.ModuloSala;
 
 public class RepositorioSalaEmOrm :
-    RepositorioBaseEmOrm<Sala>, IRepositorio<Sala>
+    RepositorioBaseEmOrm<Sala>, IRepositorioSala
 {
     public RepositorioSalaEmOrm(
         ControleCinemaDbContext dbContext) : base(dbContext) { }

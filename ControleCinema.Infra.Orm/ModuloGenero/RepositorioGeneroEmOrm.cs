@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ControleCinema.Infra.Orm.ModuloGenero;
 
 public class RepositorioGeneroEmOrm :
-    RepositorioBaseEmOrm<Genero>, IRepositorio<Genero>
+    RepositorioBaseEmOrm<Genero>, IRepositorioGenero
 {
     public RepositorioGeneroEmOrm(
         ControleCinemaDbContext dbContext) : base(dbContext) { }

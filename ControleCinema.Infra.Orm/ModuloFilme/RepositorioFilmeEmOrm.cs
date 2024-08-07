@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ControleCinema.Infra.Orm.ModuloFilme;
 
 public class RepositorioFilmeEmOrm :
-    RepositorioBaseEmOrm<Filme>, IRepositorio<Filme>
+    RepositorioBaseEmOrm<Filme>, IRepositorioFilme
 {
     public RepositorioFilmeEmOrm(
         ControleCinemaDbContext dbContext) : base(dbContext) { }

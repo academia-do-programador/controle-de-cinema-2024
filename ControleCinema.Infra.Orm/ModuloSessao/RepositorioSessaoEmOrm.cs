@@ -67,13 +67,4 @@ public class RepositorioSessaoEmOrm : IRepositorioSessao
             .AsNoTracking()
             .ToList();
     }
-
-    public List<int> ObterNumerosAssentosOcupados(int sessaoId)
-    {
-        return dbContext.Ingressos
-            .Include(s => s.Sessao)
-            .Where(s => s.Id == sessaoId)
-            .Select(s => s.NumeroAssento)
-            .ToList();
-    }
 }

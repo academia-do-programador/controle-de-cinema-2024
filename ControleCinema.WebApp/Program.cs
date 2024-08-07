@@ -21,11 +21,9 @@ public class Program
 
         builder.Services.AddDbContext<ControleCinemaDbContext>();
 
-        builder.Services.AddScoped<IRepositorio<Funcionario>, RepositorioFuncionarioEmOrm>();
-        builder.Services.AddScoped<IRepositorio<Genero>, RepositorioGeneroEmOrm>();
-        builder.Services.AddScoped<IRepositorio<Filme>, RepositorioFilmeEmOrm>();
-        builder.Services.AddScoped<IRepositorio<Sala>, RepositorioSalaEmOrm>();
-
+        builder.Services.AddScoped<IRepositorioGenero, RepositorioGeneroEmOrm>();
+        builder.Services.AddScoped<IRepositorioFilme, RepositorioFilmeEmOrm>();
+        builder.Services.AddScoped<IRepositorioSala, RepositorioSalaEmOrm>();
 
         var app = builder.Build();
 
