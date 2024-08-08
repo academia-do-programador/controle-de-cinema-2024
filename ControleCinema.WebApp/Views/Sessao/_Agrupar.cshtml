@@ -1,0 +1,42 @@
+﻿@model IEnumerable<AgrupamentoSessoesPorFilmeViewModel>
+
+@foreach (var agrupamento in Model)
+{
+    <div class="row gap-3 my-3 my-xl-5">
+        <h2 class="display-6 fw-semibold">@agrupamento.Filme</h2>
+
+        @foreach (var sessao in agrupamento.Sessoes)
+        {
+            <div class="card col-lg-4 col-xl-3">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h5>@sessao.Inicio</h5>
+
+                    <div class="text-end d-flex align-items-center gap-3">
+                        <a
+                            title="Detalhes"
+                            class="text-info-emphasis fs-5"
+                            href="/sessao/detalhes/@sessao.Id">
+                            <i class="bi bi-search"></i>
+                        </a>
+                        <a
+                            title="Encerrar"
+                            class="text-info-emphasis fs-5"
+                            href="/sessao/encerrar/@sessao.Id">
+                            <i class="bi bi-journal-x"></i>
+                        </a>
+                        <a
+                            title="Excluir"
+                            class="text-info-emphasis fs-5" href="/sessao/excluir/@sessao.Id">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Sala: @sessao.Sala</h5>
+                    <p>Ingressos Disponíveis: @sessao.IngressosDisponiveis</p>
+                    <p>Status: @sessao.Encerrada</p>
+                </div>
+            </div>
+        }
+    </div>
+}

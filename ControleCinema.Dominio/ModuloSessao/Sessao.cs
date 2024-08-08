@@ -10,15 +10,7 @@ public class Sessao : EntidadeBase
     public Sala Sala { get; set; }
 
     private bool _encerrada;
-    public bool Encerrada
-    {
-        get
-        {
-            return _encerrada ||
-                   Inicio.AddMinutes(Filme.Duracao) < DateTime.Now;
-        }
-        set => _encerrada = value;
-    }
+    public bool Encerrada { get; set; }
 
     public int NumeroMaximoIngressos { get; set; }
     public DateTime Inicio { get; set; }

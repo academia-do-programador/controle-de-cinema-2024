@@ -7,12 +7,12 @@ namespace ControleCinema.Infra.Orm.ModuloSessao;
 public class RepositorioSessaoEmOrm : IRepositorioSessao
 {
     private readonly ControleCinemaDbContext dbContext;
-    
+
     public RepositorioSessaoEmOrm(ControleCinemaDbContext dbContext)
     {
         this.dbContext = dbContext;
     }
-    
+
     public void Inserir(Sessao sessao)
     {
         dbContext.Sessoes.Add(sessao);
@@ -30,7 +30,7 @@ public class RepositorioSessaoEmOrm : IRepositorioSessao
     public void Excluir(Sessao sessao)
     {
         var ingressosParaRemover = sessao.Ingressos;
-        
+
         dbContext.Ingressos.RemoveRange(ingressosParaRemover);
 
         dbContext.Sessoes.Remove(sessao);
@@ -59,6 +59,19 @@ public class RepositorioSessaoEmOrm : IRepositorioSessao
     public List<IGrouping<string, Sessao>> ObterSessoesAgrupadasPorFilme()
     {
         return dbContext.Sessoes
+            .Include(s => s.Filme)
+            .ThenInclude(f => f.Genero)
+            .Include(s => s.Sala)
+            .Include(s => s.Ingressos)
+            .GroupBy(s => s.Filme.Titulo)
+            .AsNoTracking()
+            .ToList();
+    }
+
+    public List<IGrouping<string, Sessao>> ObterSessoesDisponiveisAgrupadas()
+    {
+        return dbContext.Sessoes
+            .Where(s => !s.Encerrada)
             .Include(s => s.Filme)
             .ThenInclude(f => f.Genero)
             .Include(s => s.Sala)
