@@ -24,8 +24,8 @@ public class RegistrarViewModel
     [DataType(DataType.Password)]
     public string? Senha { get; set; }
 
-    [DataType(DataType.Password)]
     [Display(Name = "Confirme a senha")]
+    [DataType(DataType.Password)]
     [Compare("Senha", ErrorMessage = "As senhas não conferem")]
     public string? ConfirmarSenha { get; set; }
 
@@ -43,8 +43,8 @@ public class LoginViewModel
 
     [Required(ErrorMessage = "A senha é obrigatória")]
     [DataType(DataType.Password)]
-    public string? Password { get; set; }
+    public string? Senha { get; set; }
 
     [Display(Name = "Lembrar-me")]
-    public bool RememberMe { get; set; }
+    public bool LembrarMe { get; set; }
 }

@@ -18,7 +18,13 @@ public class MapeadorGeneroEmOrm : IEntityTypeConfiguration<Genero>
             .IsRequired()
             .HasColumnType("varchar(100)");
 
-        eBuilder.HasData(ObterRegistrosPadrao());
+        eBuilder.HasOne(g => g.Usuario)
+            .WithMany()
+            .HasForeignKey("Usuario_Id")
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
+
+        //eBuilder.HasData(ObterRegistrosPadrao());
     }
 
     private Genero[] ObterRegistrosPadrao()

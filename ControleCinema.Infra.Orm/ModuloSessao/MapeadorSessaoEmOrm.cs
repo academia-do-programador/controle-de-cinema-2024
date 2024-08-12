@@ -17,11 +17,11 @@ public class MapeadorSessaoEmOrm : IEntityTypeConfiguration<Sessao>
         sBuilder.Property(s => s.NumeroMaximoIngressos)
             .IsRequired()
             .HasColumnType("int");
-        
+
         sBuilder.Property(s => s.Inicio)
             .IsRequired()
             .HasColumnType("datetime2");
-        
+
         sBuilder.Property(s => s.Encerrada)
             .IsRequired()
             .HasColumnType("bit");
@@ -30,7 +30,7 @@ public class MapeadorSessaoEmOrm : IEntityTypeConfiguration<Sessao>
             .WithMany(f => f.Sessoes)
             .HasForeignKey("Filme_Id")
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         sBuilder.HasOne(s => s.Sala)
             .WithMany()
             .HasForeignKey("Sala_Id")
@@ -40,7 +40,13 @@ public class MapeadorSessaoEmOrm : IEntityTypeConfiguration<Sessao>
             .WithOne(i => i.Sessao)
             .HasForeignKey("Sessao_Id");
 
-        sBuilder.HasData(ObterRegistrosPadrao());
+        sBuilder.HasOne(g => g.Usuario)
+            .WithMany()
+            .HasForeignKey("Usuario_Id")
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
+
+        //sBuilder.HasData(ObterRegistrosPadrao());
     }
 
     private object[] ObterRegistrosPadrao()

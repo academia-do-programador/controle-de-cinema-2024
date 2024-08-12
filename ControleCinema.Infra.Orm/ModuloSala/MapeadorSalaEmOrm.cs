@@ -17,12 +17,18 @@ public class MapeadorSalaEmOrm : IEntityTypeConfiguration<Sala>
         sBuilder.Property(s => s.Numero)
             .IsRequired()
             .HasColumnType("int");
-        
+
         sBuilder.Property(s => s.Capacidade)
             .IsRequired()
             .HasColumnType("int");
 
-        sBuilder.HasData(ObterRegistrosPadrao());
+        sBuilder.HasOne(g => g.Usuario)
+            .WithMany()
+            .HasForeignKey("Usuario_Id")
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
+
+        //sBuilder.HasData(ObterRegistrosPadrao());
     }
 
     private object[] ObterRegistrosPadrao()

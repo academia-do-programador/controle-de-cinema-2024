@@ -13,16 +13,22 @@ public class MapeadorIngressoEmOrm : IEntityTypeConfiguration<Ingresso>
         iBuilder.Property(s => s.Id)
             .IsRequired()
             .ValueGeneratedOnAdd();
-        
+
         iBuilder.Property(i => i.NumeroAssento)
             .IsRequired()
             .HasColumnType("int");
-        
+
         iBuilder.Property(i => i.MeiaEntrada)
             .IsRequired()
             .HasColumnType("bit");
 
-        iBuilder.HasData(ObterRegistrosPadrao());
+        iBuilder.HasOne(g => g.Usuario)
+            .WithMany()
+            .HasForeignKey("Usuario_Id")
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
+
+        //iBuilder.HasData(ObterRegistrosPadrao());
     }
 
     private object[] ObterRegistrosPadrao()

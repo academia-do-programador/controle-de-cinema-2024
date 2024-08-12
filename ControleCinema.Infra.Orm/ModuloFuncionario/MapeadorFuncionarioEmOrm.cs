@@ -25,8 +25,14 @@ public class MapeadorFuncionarioEmOrm : IEntityTypeConfiguration<Funcionario>
         fBuilder.Property(f => f.Senha)
             .IsRequired()
             .HasColumnType("varchar(64)");
-               
-        fBuilder.HasData(ObterRegistrosPadrao());
+
+        fBuilder.HasOne(g => g.Usuario)
+            .WithMany()
+            .HasForeignKey("Usuario_Id")
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
+
+        //fBuilder.HasData(ObterRegistrosPadrao());
     }
 
     private object[] ObterRegistrosPadrao()
