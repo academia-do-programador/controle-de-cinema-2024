@@ -25,12 +25,43 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav d-lg-flex justify-content-end gap-3 w-100">
-                    <a class="px-4 @sessaoAtivo" href="/sessao/listar">Sessões</a>
-                    <a class="px-4 @filmeAtivo" href="/filme/listar">Filmes</a>
-                    <a class="px-4 @generoAtivo" href="/genero/listar">Gêneros</a>
-                    <a class="px-4 @salaAtivo" href="/sala/listar">Salas</a>
-                    <a class="px-4 @funcionarioAtivo" href="/funcionario/listar">Funcionários</a>
+                    
+                    @if (User.IsInRole("Cliente"))
+                    {
+                        <a class="px-4 @sessaoAtivo" href="/sessao/listar">Sessões</a>
+                    }
+                    else if (User.IsInRole("Empresa"))
+                    {
+                        <a class="px-4 @sessaoAtivo" href="/sessao/listar">Sessões</a>
+                        <a class="px-4 @filmeAtivo" href="/filme/listar">Filmes</a>
+                        <a class="px-4 @generoAtivo" href="/genero/listar">Gêneros</a>
+                        <a class="px-4 @salaAtivo" href="/sala/listar">Salas</a>
+                        <a class="px-4 @funcionarioAtivo" href="/funcionario/listar">Funcionários</a>
+                    }
                 </div>
+                
+                @if (User.Identity is not null && User.Identity.IsAuthenticated)
+                {
+                    <form asp-controller="Usuario" asp-action="Logout" class="d-grid d-lg-flex justify-content-lg-end gap-1 w-100">
+                        <a href="#" class="btn btn-outline-primary px-5">
+                            <i class="bi bi-person-vcard-fill"></i>
+                            @User.Identity.Name
+                        </a>
+
+                        <button class="btn btn-primary px-3">
+                            <i class="bi bi-box-arrow-right"></i>
+                            Logout
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <div class="col-md-3 text-end">
+                        <a asp-controller="Usuario" asp-action="Login" class="btn btn-outline-primary me-2 px-4">Login</a>
+                        <a asp-controller="Usuario" asp-action="Registrar" class="btn btn-outline-primary px-4">Registro</a>
+                    </div>
+
+                }
             </div>
         </div>
     </nav>

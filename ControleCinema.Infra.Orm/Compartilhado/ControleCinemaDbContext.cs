@@ -42,6 +42,7 @@ public class ControleCinemaDbContext : IdentityDbContext<Usuario, Perfil, int>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Ignore<Funcionario>();
         modelBuilder.ApplyConfiguration(new MapeadorGeneroEmOrm());
         modelBuilder.ApplyConfiguration(new MapeadorFilmeEmOrm());
         modelBuilder.ApplyConfiguration(new MapeadorSalaEmOrm());
