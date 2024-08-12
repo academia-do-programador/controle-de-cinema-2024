@@ -1,5 +1,4 @@
-﻿using ControleCinema.Dominio.Compartilhado;
-using ControleCinema.Dominio.ModuloGenero;
+﻿using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.Infra.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,5 +13,12 @@ public class RepositorioGeneroEmOrm :
     protected override DbSet<Genero> ObterRegistros()
     {
         return _dbContext.Generos;
+    }
+
+    public List<Genero> Filtrar(Func<Genero, bool> predicate)
+    {
+        return _dbContext.Generos
+            .Where(predicate)
+            .ToList();
     }
 }

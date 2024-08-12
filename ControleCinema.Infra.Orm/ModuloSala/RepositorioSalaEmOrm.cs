@@ -1,5 +1,4 @@
-﻿using ControleCinema.Dominio.Compartilhado;
-using ControleCinema.Dominio.ModuloSala;
+﻿using ControleCinema.Dominio.ModuloSala;
 using ControleCinema.Infra.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,5 +13,12 @@ public class RepositorioSalaEmOrm :
     protected override DbSet<Sala> ObterRegistros()
     {
         return _dbContext.Salas;
+    }
+
+    public List<Sala> Filtrar(Func<Sala, bool> predicate)
+    {
+        return ObterRegistros()
+            .Where(predicate)
+            .ToList();
     }
 }

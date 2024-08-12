@@ -1,5 +1,4 @@
-﻿using ControleCinema.Dominio.Compartilhado;
-using ControleCinema.Dominio.ModuloFilme;
+﻿using ControleCinema.Dominio.ModuloFilme;
 using ControleCinema.Infra.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +24,14 @@ public class RepositorioFilmeEmOrm :
     public override List<Filme> SelecionarTodos()
     {
         return ObterRegistros().Include(f => f.Genero)
+            .ToList();
+    }
+
+    public List<Filme> Filtrar(Func<Filme, bool> predicate)
+    {
+        return ObterRegistros()
+            .Include(f => f.Genero)
+            .Where(predicate)
             .ToList();
     }
 }

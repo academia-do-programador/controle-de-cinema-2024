@@ -1,5 +1,4 @@
-﻿using ControleCinema.Dominio.Compartilhado;
-using ControleCinema.Dominio.ModuloFuncionario;
+﻿using ControleCinema.Dominio.ModuloFuncionario;
 using ControleCinema.Infra.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,5 +13,12 @@ public class RepositorioFuncionarioEmOrm :
     protected override DbSet<Funcionario> ObterRegistros()
     {
         return _dbContext.Funcionarios;
+    }
+
+    public List<Funcionario> Filtrar(Func<Funcionario, bool> predicate)
+    {
+        return _dbContext.Funcionarios
+            .Where(predicate)
+            .ToList();
     }
 }

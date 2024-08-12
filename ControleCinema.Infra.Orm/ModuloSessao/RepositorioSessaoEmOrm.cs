@@ -56,6 +56,16 @@ public class RepositorioSessaoEmOrm : IRepositorioSessao
             .ToList();
     }
 
+    public List<Sessao> Filtrar(Func<Sessao, bool> predicate)
+    {
+        return dbContext.Sessoes
+            .Include(s => s.Filme)
+            .Include(s => s.Sala)
+            .AsNoTracking().AsEnumerable()
+            .Where(predicate)
+            .ToList();
+    }
+
     public List<IGrouping<string, Sessao>> ObterSessoesAgrupadasPorFilme()
     {
         return dbContext.Sessoes
