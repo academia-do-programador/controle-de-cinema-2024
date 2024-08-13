@@ -1,11 +1,13 @@
 ﻿using ControleCinema.Dominio.ModuloSala;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ControleCinema.WebApp.Controllers;
 
-public class SalaController : Controller
+[Authorize(Roles = "Empresa")]
+public class SalaController : AuthController
 {
     private readonly IRepositorioSala repositorioSala;
 
@@ -16,7 +18,8 @@ public class SalaController : Controller
 
     public IActionResult Listar()
     {
-        var salas = repositorioSala.SelecionarTodos();
+        var salas = repositorioSala
+            .Filtrar(s => s.UsuarioId == UsuarioId);
 
         var listarSalasVm = salas
             .Select(f => new ListarSalaViewModel
@@ -45,7 +48,8 @@ public class SalaController : Controller
         var sala = new Sala()
         {
             Numero = inserirSalaVm.Numero,
-            Capacidade = inserirSalaVm.Capacidade
+            Capacidade = inserirSalaVm.Capacidade,
+            UsuarioId = UsuarioId.GetValueOrDefault()
         };
 
         repositorioSala.Inserir(sala);
@@ -149,16 +153,5 @@ public class SalaController : Controller
         };
 
         return View(detalhesSalaViewModel);
-    }
-
-    private IActionResult MensagemRegistroNaoEncontrado(int idRegistro)
-    {
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
-        {
-            Titulo = "Erro",
-            Mensagem = $"Não foi possível encontrar o registro ID [{idRegistro}]!"
-        });
-
-        return RedirectToAction(nameof(Listar));
     }
 }

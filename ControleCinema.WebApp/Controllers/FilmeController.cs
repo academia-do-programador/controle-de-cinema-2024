@@ -3,11 +3,13 @@ using ControleCinema.Dominio.ModuloFilme;
 using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ControleCinema.WebApp.Controllers;
 
+[Authorize(Roles = "Empresa")]
 public class FilmeController : Controller
 {
     private readonly IRepositorioFilme repositorioFilme;

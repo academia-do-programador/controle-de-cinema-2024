@@ -1,10 +1,12 @@
 ﻿using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ControleCinema.WebApp.Controllers;
 
+[Authorize(Roles = "Empresa")]
 public class GeneroController : Controller
 {
     private readonly IRepositorioGenero repositorioGenero;

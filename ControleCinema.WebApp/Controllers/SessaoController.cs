@@ -3,6 +3,7 @@ using ControleCinema.Dominio.ModuloSala;
 using ControleCinema.Dominio.ModuloSessao;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -25,6 +26,7 @@ public class SessaoController : Controller
         this.repositorioFilme = repositorioFilme;
     }
 
+    [Authorize(Roles = "Empresa")]
     public IActionResult Listar()
     {
         var agrupamentos =
@@ -38,7 +40,7 @@ public class SessaoController : Controller
         return View(agrupamentosSessoesVm);
     }
 
-
+    [Authorize(Roles = "Empresa")]
     public IActionResult Inserir()
     {
         var salas = repositorioSala.SelecionarTodos();
@@ -55,6 +57,7 @@ public class SessaoController : Controller
         return View(inserirSessaoVm);
     }
 
+    [Authorize(Roles = "Empresa")]
     [HttpPost]
     public IActionResult Inserir(InserirSessaoViewModel inserirSessaoVm)
     {
@@ -97,6 +100,7 @@ public class SessaoController : Controller
         return RedirectToAction(nameof(Listar));
     }
 
+    [Authorize(Roles = "Empresa")]
     public IActionResult Encerrar(int id)
     {
         var sessao = repositorioSessao.SelecionarPorId(id);
@@ -109,6 +113,7 @@ public class SessaoController : Controller
         return View(detalhesSessaoViewModel);
     }
 
+    [Authorize(Roles = "Empresa")]
     [HttpPost]
     public IActionResult Encerrar(DetalhesSessaoViewModel detalhesSessaoViewModel)
     {
@@ -130,6 +135,7 @@ public class SessaoController : Controller
         return RedirectToAction(nameof(Listar));
     }
 
+    [Authorize(Roles = "Empresa")]
     public IActionResult Excluir(int id)
     {
         var sessao = repositorioSessao.SelecionarPorId(id);
@@ -142,6 +148,7 @@ public class SessaoController : Controller
         return View(detalhesSessaoVm);
     }
 
+    [Authorize(Roles = "Empresa")]
     [HttpPost]
     public IActionResult Excluir(DetalhesSessaoViewModel detalhesSessaoVm)
     {
@@ -161,6 +168,7 @@ public class SessaoController : Controller
         return RedirectToAction(nameof(Listar));
     }
 
+    [Authorize(Roles = "Empresa,Cliente")]
     public IActionResult Detalhes(int id)
     {
         var sessao = repositorioSessao.SelecionarPorId(id);
@@ -173,6 +181,7 @@ public class SessaoController : Controller
         return View(detalhesSessaoVm);
     }
 
+    [Authorize(Roles = "Empresa,Cliente")]
     [HttpGet, Route("/sessao/comprar-ingresso/{sessaoId:int}")]
     public IActionResult ComprarIngresso(int sessaoId)
     {
@@ -193,6 +202,7 @@ public class SessaoController : Controller
         return View(comprarIngressoVm);
     }
 
+    [Authorize(Roles = "Empresa,Cliente")]
     [HttpPost, Route("/sessao/comprar-ingresso/{sessaoId:int}")]
     public IActionResult ComprarIngresso(int sessaoId, ComprarIngressoViewModel comprarIngressoVm)
     {
