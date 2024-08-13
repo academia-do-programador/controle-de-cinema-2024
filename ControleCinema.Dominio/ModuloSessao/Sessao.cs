@@ -44,9 +44,12 @@ public class Sessao : EntidadeBase
         return NumeroMaximoIngressos - Ingressos.Count;
     }
 
-    public Ingresso GerarIngresso(int assentoSelecionado, bool meiaEntrada)
+    public Ingresso GerarIngresso(int assentoSelecionado, bool meiaEntrada, int usuarioId)
     {
-        var ingresso = new Ingresso(assentoSelecionado, meiaEntrada);
+        var ingresso = new Ingresso(assentoSelecionado, meiaEntrada)
+        {
+            UsuarioId = usuarioId
+        };
 
         Ingressos.Add(ingresso);
 

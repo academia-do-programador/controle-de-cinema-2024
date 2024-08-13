@@ -1,19 +1,25 @@
-﻿using ControleCinema.Dominio.Extensions;
+﻿using ControleCinema.Dominio.Compartilhado;
+using ControleCinema.Dominio.Extensions;
 using ControleCinema.Dominio.ModuloFilme;
 using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ControleCinema.WebApp.Controllers;
 
-public class FilmeController : Controller
+[Authorize(Roles = "Empresa")]
+public class FilmeController : AuthController
 {
-    private readonly IRepositorioFilme repositorioFilme;
-    private readonly IRepositorioGenero repositorioGenero;
+    private readonly IRepositorio<Filme> repositorioFilme;
+    private readonly IRepositorio<Genero> repositorioGenero;
 
-    public FilmeController(IRepositorioFilme repositorioFilme, IRepositorioGenero repositorioGenero)
+    public FilmeController(
+        IRepositorio<Filme> repositorioFilme,
+        IRepositorio<Genero> repositorioGenero
+    )
     {
         this.repositorioFilme = repositorioFilme;
         this.repositorioGenero = repositorioGenero;
@@ -21,7 +27,8 @@ public class FilmeController : Controller
 
     public IActionResult Listar()
     {
-        var filmes = repositorioFilme.SelecionarTodos();
+        var filmes = repositorioFilme
+            .Filtrar(f => f.UsuarioId == UsuarioId);
 
         var listarFilmesVm = filmes
             .Select(f => new ListarFilmeViewModel
@@ -72,7 +79,8 @@ public class FilmeController : Controller
             Titulo = inserirFilmeVm.Titulo,
             Lancamento = inserirFilmeVm.Lancamento,
             Duracao = inserirFilmeVm.Duracao,
-            Genero = generoSelecionado
+            Genero = generoSelecionado!,
+            UsuarioId = UsuarioId.GetValueOrDefault()
         };
 
         repositorioFilme.Inserir(filme);
@@ -198,16 +206,5 @@ public class FilmeController : Controller
         };
 
         return View(detalhesFilmeViewModel);
-    }
-
-    private IActionResult MensagemRegistroNaoEncontrado(int idRegistro)
-    {
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
-        {
-            Titulo = "Erro",
-            Mensagem = $"Não foi possível encontrar o registro ID [{idRegistro}]!"
-        });
-
-        return RedirectToAction(nameof(Listar));
     }
 }

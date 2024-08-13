@@ -1,22 +1,28 @@
-﻿using ControleCinema.Dominio.ModuloGenero;
+﻿using ControleCinema.Dominio.Compartilhado;
+using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ControleCinema.WebApp.Controllers;
 
-public class GeneroController : Controller
+[Authorize(Roles = "Empresa")]
+public class GeneroController : AuthController
 {
-    private readonly IRepositorioGenero repositorioGenero;
+    private readonly IRepositorio<Genero> repositorioGenero;
 
-    public GeneroController(IRepositorioGenero repositorioGenero)
+    public GeneroController(
+        IRepositorio<Genero> repositorioGenero
+    )
     {
         this.repositorioGenero = repositorioGenero;
     }
 
     public IActionResult Listar()
     {
-        var generos = repositorioGenero.SelecionarTodos();
+        var generos = repositorioGenero
+            .Filtrar(g => g.UsuarioId == UsuarioId);
 
         var listarGenerosVm = generos
             .Select(f => new ListarGeneroViewModel
@@ -43,7 +49,8 @@ public class GeneroController : Controller
 
         var genero = new Genero()
         {
-            Descricao = inserirGeneroVm.Descricao
+            Descricao = inserirGeneroVm.Descricao,
+            UsuarioId = UsuarioId.GetValueOrDefault()
         };
 
         repositorioGenero.Inserir(genero);
@@ -143,16 +150,5 @@ public class GeneroController : Controller
         };
 
         return View(detalhesGeneroViewModel);
-    }
-
-    private IActionResult MensagemRegistroNaoEncontrado(int idRegistro)
-    {
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
-        {
-            Titulo = "Erro",
-            Mensagem = $"Não foi possível encontrar o registro ID [{idRegistro}]!",
-        });
-
-        return RedirectToAction(nameof(Listar));
     }
 }
