@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ControleCinema.Infra.Orm.Migrations
 {
     /// <inheritdoc />
-    public partial class AddTabelasIdentity : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -153,28 +153,6 @@ namespace ControleCinema.Infra.Orm.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Funcionarios",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Login = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Senha = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UsuarioId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Funcionarios", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Funcionarios_AspNetUsers_UsuarioId",
-                        column: x => x.UsuarioId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -349,11 +327,6 @@ namespace ControleCinema.Infra.Orm.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Funcionarios_UsuarioId",
-                table: "Funcionarios",
-                column: "UsuarioId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TBFilme_Genero_Id",
                 table: "TBFilme",
                 column: "Genero_Id");
@@ -416,9 +389,6 @@ namespace ControleCinema.Infra.Orm.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
-
-            migrationBuilder.DropTable(
-                name: "Funcionarios");
 
             migrationBuilder.DropTable(
                 name: "TBIngresso");

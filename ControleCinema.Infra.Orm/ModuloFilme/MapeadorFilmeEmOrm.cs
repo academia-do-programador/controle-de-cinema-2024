@@ -32,13 +32,15 @@ public class MapeadorFilmeEmOrm : IEntityTypeConfiguration<Filme>
             .HasConstraintName("FK_TBFilme_TBGenero")
             .OnDelete(DeleteBehavior.Restrict);
 
-        fBuilder.HasOne(f => f.Usuario)
-            .WithMany()
-            .HasForeignKey("Usuario_Id")
+        fBuilder.Property(s => s.UsuarioId)
             .IsRequired()
-            .OnDelete(DeleteBehavior.NoAction);
+            .HasColumnType("int")
+            .HasColumnName("Usuario_Id");
 
-        //fBuilder.HasData(ObterRegistrosPadrao());
+        fBuilder.HasOne(g => g.Usuario)
+            .WithMany()
+            .HasForeignKey(s => s.UsuarioId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 
     private object[] ObterRegistrosPadrao()

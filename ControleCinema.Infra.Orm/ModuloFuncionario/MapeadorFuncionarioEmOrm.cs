@@ -9,30 +9,33 @@ public class MapeadorFuncionarioEmOrm : IEntityTypeConfiguration<Funcionario>
     public void Configure(EntityTypeBuilder<Funcionario> fBuilder)
     {
         fBuilder.ToTable("TBFuncionario");
-               
+
         fBuilder.Property(f => f.Id)
             .IsRequired()
             .ValueGeneratedOnAdd();
-               
+
         fBuilder.Property(f => f.Nome)
             .IsRequired()
             .HasColumnType("varchar(200)");
-                           
+
         fBuilder.Property(f => f.Login)
             .IsRequired()
             .HasColumnType("varchar(100)");
-                           
+
         fBuilder.Property(f => f.Senha)
             .IsRequired()
             .HasColumnType("varchar(64)");
 
+
+        fBuilder.Property(s => s.UsuarioId)
+            .IsRequired()
+            .HasColumnType("int")
+            .HasColumnName("Usuario_Id");
+
         fBuilder.HasOne(g => g.Usuario)
             .WithMany()
-            .HasForeignKey("Usuario_Id")
-            .IsRequired()
+            .HasForeignKey(s => s.UsuarioId)
             .OnDelete(DeleteBehavior.NoAction);
-
-        //fBuilder.HasData(ObterRegistrosPadrao());
     }
 
     private object[] ObterRegistrosPadrao()

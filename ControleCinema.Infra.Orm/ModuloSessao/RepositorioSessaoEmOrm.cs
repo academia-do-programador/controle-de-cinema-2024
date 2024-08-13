@@ -66,9 +66,10 @@ public class RepositorioSessaoEmOrm : IRepositorioSessao
             .ToList();
     }
 
-    public List<IGrouping<string, Sessao>> ObterSessoesAgrupadasPorFilme()
+    public List<IGrouping<string, Sessao>> ObterSessoesAgrupadasPorFilme(int usuarioId)
     {
         return dbContext.Sessoes
+            .Where(s => s.UsuarioId == usuarioId)
             .Include(s => s.Filme)
             .ThenInclude(f => f.Genero)
             .Include(s => s.Sala)
@@ -78,7 +79,7 @@ public class RepositorioSessaoEmOrm : IRepositorioSessao
             .ToList();
     }
 
-    public List<IGrouping<string, Sessao>> ObterSessoesDisponiveisAgrupadas()
+    public List<IGrouping<string, Sessao>> ObterSessoesAgrupadasPorFilme()
     {
         return dbContext.Sessoes
             .Where(s => !s.Encerrada)
@@ -88,6 +89,29 @@ public class RepositorioSessaoEmOrm : IRepositorioSessao
             .Include(s => s.Ingressos)
             .GroupBy(s => s.Filme.Titulo)
             .AsNoTracking()
+            .ToList();
+    }
+
+    public List<Ingresso> SelecionarTodosIngressos(int usuarioSessaoId)
+    {
+        return dbContext.Ingressos
+            .Include(i => i.Sessao)
+            .Where(i => i.Sessao.UsuarioId == usuarioSessaoId)
+            .ToList();
+    }
+
+    public List<Ingresso> SelecionarTodosIngressos()
+    {
+        return dbContext.Ingressos
+            .ToList();
+    }
+
+    public List<int> ObterNumerosAssentosOcupados(int sessaoId)
+    {
+        return dbContext.Ingressos
+            .Where(s => s.Id == sessaoId)
+            .Include(s => s.Sessao)
+            .Select(s => s.NumeroAssento)
             .ToList();
     }
 }

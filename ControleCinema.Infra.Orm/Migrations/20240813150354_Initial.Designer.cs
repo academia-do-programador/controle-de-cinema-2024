@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ControleCinema.Infra.Orm.Migrations
 {
     [DbContext(typeof(ControleCinemaDbContext))]
-    [Migration("20240812175040_Add Tabelas Identity")]
-    partial class AddTabelasIdentity
+    [Migration("20240813150354_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,182 +25,7 @@ namespace ControleCinema.Infra.Orm.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ControleCinema.Dominio.ModuloFilme.Filme", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Duracao")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Genero_Id")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Lancamento")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Titulo")
-                        .IsRequired()
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<int>("Usuario_Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Genero_Id");
-
-                    b.HasIndex("Usuario_Id");
-
-                    b.ToTable("TBFilme", (string)null);
-                });
-
-            modelBuilder.Entity("ControleCinema.Dominio.ModuloFuncionario.Funcionario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Senha")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UsuarioId");
-
-                    b.ToTable("Funcionarios");
-                });
-
-            modelBuilder.Entity("ControleCinema.Dominio.ModuloGenero.Genero", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<int>("Usuario_Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Usuario_Id");
-
-                    b.ToTable("TBGenero", (string)null);
-                });
-
-            modelBuilder.Entity("ControleCinema.Dominio.ModuloSala.Sala", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Capacidade")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Numero")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Usuario_Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Usuario_Id");
-
-                    b.ToTable("TBSala", (string)null);
-                });
-
-            modelBuilder.Entity("ControleCinema.Dominio.ModuloSessao.Ingresso", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("MeiaEntrada")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("NumeroAssento")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Sessao_Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Usuario_Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Sessao_Id");
-
-                    b.HasIndex("Usuario_Id");
-
-                    b.ToTable("TBIngresso", (string)null);
-                });
-
-            modelBuilder.Entity("ControleCinema.Dominio.ModuloSessao.Sessao", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Encerrada")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Filme_Id")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Inicio")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("NumeroMaximoIngressos")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Sala_Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Usuario_Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Filme_Id");
-
-                    b.HasIndex("Sala_Id");
-
-                    b.HasIndex("Usuario_Id");
-
-                    b.ToTable("TBSessao", (string)null);
-                });
-
-            modelBuilder.Entity("ControleCinema.Dominio.ModuloUsuario.Perfil", b =>
+            modelBuilder.Entity("ControleCinema.Dominio.ModuloAutenticacao.Perfil", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -230,7 +55,7 @@ namespace ControleCinema.Infra.Orm.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("ControleCinema.Dominio.ModuloUsuario.Usuario", b =>
+            modelBuilder.Entity("ControleCinema.Dominio.ModuloAutenticacao.Usuario", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -296,6 +121,156 @@ namespace ControleCinema.Infra.Orm.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("ControleCinema.Dominio.ModuloFilme.Filme", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Duracao")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Genero_Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Lancamento")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Genero_Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("TBFilme", (string)null);
+                });
+
+            modelBuilder.Entity("ControleCinema.Dominio.ModuloGenero.Genero", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("TBGenero", (string)null);
+                });
+
+            modelBuilder.Entity("ControleCinema.Dominio.ModuloSala.Sala", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Capacidade")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Numero")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("TBSala", (string)null);
+                });
+
+            modelBuilder.Entity("ControleCinema.Dominio.ModuloSessao.Ingresso", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("MeiaEntrada")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("NumeroAssento")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Sessao_Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Sessao_Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("TBIngresso", (string)null);
+                });
+
+            modelBuilder.Entity("ControleCinema.Dominio.ModuloSessao.Sessao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Encerrada")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Filme_Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Inicio")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("NumeroMaximoIngressos")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Sala_Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Filme_Id");
+
+                    b.HasIndex("Sala_Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("TBSessao", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -410,9 +385,9 @@ namespace ControleCinema.Infra.Orm.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_TBFilme_TBGenero");
 
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Usuario", "Usuario")
+                    b.HasOne("ControleCinema.Dominio.ModuloAutenticacao.Usuario", "Usuario")
                         .WithMany()
-                        .HasForeignKey("Usuario_Id")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -421,22 +396,11 @@ namespace ControleCinema.Infra.Orm.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("ControleCinema.Dominio.ModuloFuncionario.Funcionario", b =>
-                {
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Usuario");
-                });
-
             modelBuilder.Entity("ControleCinema.Dominio.ModuloGenero.Genero", b =>
                 {
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Usuario", "Usuario")
+                    b.HasOne("ControleCinema.Dominio.ModuloAutenticacao.Usuario", "Usuario")
                         .WithMany()
-                        .HasForeignKey("Usuario_Id")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -445,9 +409,9 @@ namespace ControleCinema.Infra.Orm.Migrations
 
             modelBuilder.Entity("ControleCinema.Dominio.ModuloSala.Sala", b =>
                 {
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Usuario", "Usuario")
+                    b.HasOne("ControleCinema.Dominio.ModuloAutenticacao.Usuario", "Usuario")
                         .WithMany()
-                        .HasForeignKey("Usuario_Id")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -462,9 +426,9 @@ namespace ControleCinema.Infra.Orm.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Usuario", "Usuario")
+                    b.HasOne("ControleCinema.Dominio.ModuloAutenticacao.Usuario", "Usuario")
                         .WithMany()
-                        .HasForeignKey("Usuario_Id")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -487,9 +451,9 @@ namespace ControleCinema.Infra.Orm.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Usuario", "Usuario")
+                    b.HasOne("ControleCinema.Dominio.ModuloAutenticacao.Usuario", "Usuario")
                         .WithMany()
-                        .HasForeignKey("Usuario_Id")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -502,7 +466,7 @@ namespace ControleCinema.Infra.Orm.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Perfil", null)
+                    b.HasOne("ControleCinema.Dominio.ModuloAutenticacao.Perfil", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -511,7 +475,7 @@ namespace ControleCinema.Infra.Orm.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Usuario", null)
+                    b.HasOne("ControleCinema.Dominio.ModuloAutenticacao.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -520,7 +484,7 @@ namespace ControleCinema.Infra.Orm.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Usuario", null)
+                    b.HasOne("ControleCinema.Dominio.ModuloAutenticacao.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -529,13 +493,13 @@ namespace ControleCinema.Infra.Orm.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Perfil", null)
+                    b.HasOne("ControleCinema.Dominio.ModuloAutenticacao.Perfil", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Usuario", null)
+                    b.HasOne("ControleCinema.Dominio.ModuloAutenticacao.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -544,7 +508,7 @@ namespace ControleCinema.Infra.Orm.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.HasOne("ControleCinema.Dominio.ModuloUsuario.Usuario", null)
+                    b.HasOne("ControleCinema.Dominio.ModuloAutenticacao.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

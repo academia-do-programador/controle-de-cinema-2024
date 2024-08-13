@@ -40,13 +40,15 @@ public class MapeadorSessaoEmOrm : IEntityTypeConfiguration<Sessao>
             .WithOne(i => i.Sessao)
             .HasForeignKey("Sessao_Id");
 
+        sBuilder.Property(s => s.UsuarioId)
+            .IsRequired()
+            .HasColumnType("int")
+            .HasColumnName("Usuario_Id");
+
         sBuilder.HasOne(g => g.Usuario)
             .WithMany()
-            .HasForeignKey("Usuario_Id")
-            .IsRequired()
+            .HasForeignKey(s => s.UsuarioId)
             .OnDelete(DeleteBehavior.NoAction);
-
-        //sBuilder.HasData(ObterRegistrosPadrao());
     }
 
     private object[] ObterRegistrosPadrao()

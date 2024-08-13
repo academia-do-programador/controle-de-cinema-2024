@@ -1,4 +1,7 @@
-﻿using ControleCinema.Dominio.ModuloSessao;
+﻿using ControleCinema.Dominio.ModuloFilme;
+using ControleCinema.Dominio.ModuloGenero;
+using ControleCinema.Dominio.ModuloSala;
+using ControleCinema.Dominio.ModuloSessao;
 using ControleCinema.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,20 +10,37 @@ namespace ControleCinema.WebApp.Controllers;
 public class InicioController : Controller
 {
     private readonly IRepositorioSessao repositorioSessao;
+    private readonly IRepositorioFilme repositorioFilme;
+    private readonly IRepositorioGenero repositorioGenero;
+    private readonly IRepositorioSala repositorioSala;
 
-    public InicioController(IRepositorioSessao repositorioSessao)
+    public InicioController(
+        IRepositorioSessao repositorioSessao,
+        IRepositorioFilme repositorioFilme,
+        IRepositorioGenero repositorioGenero,
+        IRepositorioSala repositorioSala
+    )
     {
         this.repositorioSessao = repositorioSessao;
+        this.repositorioFilme = repositorioFilme;
+        this.repositorioGenero = repositorioGenero;
+        this.repositorioSala = repositorioSala;
     }
 
     public ViewResult Index()
     {
-        var agrupamentos = repositorioSessao.ObterSessoesDisponiveisAgrupadas();
+        var agrupamentos = repositorioSessao.ObterSessoesAgrupadasPorFilme();
 
         var agrupamentosSessoesVm = agrupamentos
             .Select(MapearAgrupamentoSessoes);
 
         ViewBag.Agrupamentos = agrupamentosSessoesVm;
+
+        ViewBag.QuantidadeFilmes = repositorioFilme.SelecionarTodos().Count;
+        ViewBag.QuantidadeGeneros = repositorioGenero.SelecionarTodos(.Count;
+        ViewBag.QuantidadeSalas = repositorioSala.SelecionarTodos().Count;
+        ViewBag.QuantidadeSessoes = repositorioSessao.SelecionarTodos().Count;
+        ViewBag.QuantidadeIngressos = repositorioSessao.SelecionarTodosIngressos().Count;
 
         return View();
     }

@@ -9,7 +9,6 @@ public class Sessao : EntidadeBase
     public Filme Filme { get; set; }
     public Sala Sala { get; set; }
 
-    private bool _encerrada;
     public bool Encerrada { get; set; }
 
     public int NumeroMaximoIngressos { get; set; }
