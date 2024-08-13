@@ -25,12 +25,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav d-lg-flex justify-content-end gap-3 w-100">
-                    
-                    @if (User.IsInRole("Cliente"))
-                    {
-                        <a class="px-4 @sessaoAtivo" href="/sessao/listar">Sessões</a>
-                    }
-                    else if (User.IsInRole("Empresa"))
+                    @if (User.IsInRole("Empresa"))
                     {
                         <a class="px-4 @sessaoAtivo" href="/sessao/listar">Sessões</a>
                         <a class="px-4 @filmeAtivo" href="/filme/listar">Filmes</a>

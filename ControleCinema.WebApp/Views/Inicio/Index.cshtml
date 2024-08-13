@@ -1,27 +1,102 @@
 ﻿@{
     ViewBag.Title = "Página Inicial";
+
     IEnumerable<AgrupamentoSessoesPorFilmeViewModel> agrupamentosVm = ViewBag.Agrupamentos;
 }
 
 <div class="col">
-    <div class="row my-3 my-xl-5">
+
+    @if (User.IsInRole("Empresa"))
+    {
+        <section class="row row-cols-lg-4 justify-content-start align-items-stretch gap-3 px-lg-2">
+
+            <div title="Sessões" class="card px-0">
+                <img class="card-img-top" src="~/img/card2-sm.jpg" alt="Imagem promocional do filme X: A Marca da Morte">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 text-primary">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <label class="fs-6 fw-semibold ">@ViewBag.QuantidadeIngressos ingresso(s) vendido(s)</label>
+                    </div>
+
+                    <label>Em <strong class="text-primary">@ViewBag.QuantidadeSessoes</strong> sessões</label>
+                </div>
+                <a href="/sessao/listar" class="stretched-link"></a>
+            </div>
+
+            <div title="Filmes" class="card px-0">
+                <img class="card-img-top " src="~/img/card1-sm.jpg" alt="Imagem promocional do filme Deadpool & Wolverine">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 text-primary">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <label class="fs-6 fw-semibold ">@ViewBag.QuantidadeFilmes filme(s) cadastrado(s)</label>
+                    </div>
+
+                    <label>Em <strong class="text-primary">@ViewBag.QuantidadeGeneros</strong> gêneros</label>
+                </div>
+                <a href="/filme/listar" class="stretched-link"></a>
+            </div>
+
+            <div title="Salas" class="card px-0">
+                <img class="card-img-top" src="~/img/card3-sm.jpg" alt="Imagem promocional do filme X: A Marca da Morte">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 text-primary">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <label class="fs-6 fw-semibold ">@ViewBag.QuantidadeSalas sala(s) cadastrada(s)</label>
+                    </div>
+                </div>
+                <a href="/sala/listar" class="stretched-link"></a>
+            </div>
+        </section>
+    }
+
+    <section class="row my-3 my-xl-5">
         <div class="col-lg-6">
-            <img class="img-fluid" src="~/img/home_logo.png" alt="Pessoas assistindo um filme"/>
+            <img class="img-fluid" src="~/img/home_logo.png" alt="Pessoas assistindo um filme" />
         </div>
         <div class="col d-grid gap-1">
             <h2 class="display-2 fw-bold text-primary">Bem-vindo(a)!</h2>
-            
+
             <p class="fs-4 fw-semibold">
                 Descubra uma nova dimensão de entretenimento, onde cada sessão é uma experiência inesquecível. Oferecemos uma seleção diversificada de filmes, desde os lançamentos mais aguardados até clássicos atemporais, tudo em ambientes confortáveis e modernos.
             </p>
+
+            @if (User.Identity is null || (User.Identity is not null && !User.Identity.IsAuthenticated))
+            {
+                <div class="d-grid d-lg-flex gap-3 align-items-center">
+                    <a asp-controller="Usuario" asp-action="Login" class="col btn btn-outline-primary">Login</a>
+                    <a asp-controller="Usuario" asp-action="Registrar" class="col btn btn-primary">Registro</a>
+                </div>
+            }
         </div>
-    </div>
-    
-    
-    <section>
-        <h3 class="display-4 text-primary fw-semibold">Sessões Disponíveis</h3>
-        <hr />
-        
-        <partial name="../Sessao/_Agrupar" model="agrupamentosVm"></partial>
     </section>
+
+    @if (User.Identity is not null && User.Identity.IsAuthenticated)
+    {
+        <section class="px-lg-2">
+            @if (!agrupamentosVm.Any())
+            {
+                <h3 class="text-bg-primary fs-3 fw-semibold p-3 rounded-3">
+                    Nenhuma sessão disponível no momento.
+                </h3>
+            }
+            else
+            {
+                <h3 class="display-4 text-primary fw-semibold">Sessões Disponíveis</h3>
+                <hr />
+
+                <partial name="../Sessao/Agrupar" model="agrupamentosVm"></partial>
+            }
+        </section>
+
+        <section class="card text-light mt-5 mb-3 d-none d-lg-block">
+            <img src="~/img/bg-hbo-htd.jpg" alt="" class="card-img">
+            <div class="card-img-overlay px-2 px-lg-5">
+                <h3 class="display-2 fw-bolder mt-5">Novidades à caminho!</h3>
+
+                <p class="fs-2 fw-bold mt-5">
+                    Em breve, será possível encontrar <strong class="text-bg-primary px-2 rounded">informações sobre todas as séries e filmes que você possa imaginar</strong> em nosso serviço através da integração com a API pública do <strong class="text-bg-primary px-2 rounded">TMDB</strong>.
+                </p>
+            </div>
+        </section>
+    }
 </div>

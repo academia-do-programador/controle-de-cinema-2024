@@ -37,7 +37,7 @@ public class InicioController : Controller
         ViewBag.Agrupamentos = agrupamentosSessoesVm;
 
         ViewBag.QuantidadeFilmes = repositorioFilme.SelecionarTodos().Count;
-        ViewBag.QuantidadeGeneros = repositorioGenero.SelecionarTodos(.Count;
+        ViewBag.QuantidadeGeneros = repositorioGenero.SelecionarTodos().Count;
         ViewBag.QuantidadeSalas = repositorioSala.SelecionarTodos().Count;
         ViewBag.QuantidadeSessoes = repositorioSessao.SelecionarTodos().Count;
         ViewBag.QuantidadeIngressos = repositorioSessao.SelecionarTodosIngressos().Count;
