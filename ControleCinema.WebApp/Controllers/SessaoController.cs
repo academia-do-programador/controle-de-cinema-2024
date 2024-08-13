@@ -1,5 +1,4 @@
-﻿using ControleCinema.Dominio.Compartilhado;
-using ControleCinema.Dominio.ModuloFilme;
+﻿using ControleCinema.Dominio.ModuloFilme;
 using ControleCinema.Dominio.ModuloSala;
 using ControleCinema.Dominio.ModuloSessao;
 using ControleCinema.WebApp.Extensions;
@@ -12,13 +11,13 @@ namespace ControleCinema.WebApp.Controllers;
 
 public class SessaoController : AuthController
 {
-    private readonly IRepositorio<Sala> repositorioSala;
-    private readonly IRepositorio<Filme> repositorioFilme;
+    private readonly IRepositorioSala repositorioSala;
+    private readonly IRepositorioFilme repositorioFilme;
     private readonly IRepositorioSessao repositorioSessao;
 
     public SessaoController(
-        IRepositorio<Filme> repositorioFilme,
-        IRepositorio<Sala> repositorioSala,
+        IRepositorioFilme repositorioFilme,
+        IRepositorioSala repositorioSala,
         IRepositorioSessao repositorioSessao
     )
     {
@@ -27,7 +26,7 @@ public class SessaoController : AuthController
         this.repositorioSala = repositorioSala;
     }
 
-    [Authorize(Roles = "Empresa,Cliente")]
+    [Authorize(Roles = "Empresa")]
     public IActionResult Listar()
     {
         var agrupamentos = repositorioSessao
@@ -225,7 +224,7 @@ public class SessaoController : AuthController
             Mensagem = $"O ingresso ID [{novoIngresso.Id}] foi gerado com sucesso. Obrigado por sua compra!",
         });
 
-        return RedirectToAction(nameof(Listar));
+        return RedirectToAction("Index", "Inicio");
     }
 
     private static AgrupamentoSessoesPorFilmeViewModel MapearAgrupamentoSessoes(IGrouping<string, Sessao> grp)
