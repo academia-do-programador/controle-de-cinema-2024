@@ -8,7 +8,7 @@
     <partial name="_Informacoes" model="Model"></partial>
 
     <div class="d-grid gap-2 d-md-block mt-4">
-        @if (Model.Encerrada == "Disponível")
+        @if (Model.Encerrada == "Disponível" && User.IsInRole("Cliente"))
         {
             <a class="btn btn-primary px-5" href="/sessao/comprar-ingresso/@Model.Id">
                 <i class="bi bi-coin me-1"></i>
