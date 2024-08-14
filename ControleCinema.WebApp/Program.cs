@@ -1,3 +1,4 @@
+using ControleCinema.Aplicacao.Services;
 using ControleCinema.Dominio.ModuloFilme;
 using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.Dominio.ModuloSala;
@@ -30,6 +31,7 @@ public class Program
         builder.Services.AddScoped<IRepositorioSala, RepositorioSalaEmOrm>();
         builder.Services.AddScoped<IRepositorioSessao, RepositorioSessaoEmOrm>();
 
+        builder.Services.AddScoped<SessaoService>();
 
         builder.Services.AddIdentity<Usuario, Perfil>()
             .AddEntityFrameworkStores<ControleCinemaDbContext>()

@@ -7,10 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ControleCinema.Aplicacao\ControleCinema.Aplicacao.csproj" />
       <ProjectReference Include="..\ControleCinema.Infra.Orm\ControleCinema.Infra.Orm.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FluentResults" Version="3.16.0" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7">
         <PrivateAssets>all</PrivateAssets>

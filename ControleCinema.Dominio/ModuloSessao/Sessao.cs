@@ -60,5 +60,18 @@ public class Sessao : EntidadeBase
     {
         Encerrada = true;
     }
+
+    public List<string> Validar()
+    {
+        List<string> erros = [];
+
+        if (Inicio < DateTime.Now)
+            erros.Add("A sessão precisa iniciar em uma data futura!");
+
+        if (NumeroMaximoIngressos < 1)
+            erros.Add("Ao menos um ingresso precisa estar disponível!");
+
+        return erros;
+    }
 }
 

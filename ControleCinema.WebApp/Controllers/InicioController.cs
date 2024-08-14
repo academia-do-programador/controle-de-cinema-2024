@@ -2,6 +2,7 @@
 using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.Dominio.ModuloSala;
 using ControleCinema.Dominio.ModuloSessao;
+using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,6 +42,8 @@ public class InicioController : Controller
         ViewBag.QuantidadeSalas = repositorioSala.SelecionarTodos().Count;
         ViewBag.QuantidadeSessoes = repositorioSessao.SelecionarTodos().Count;
         ViewBag.QuantidadeIngressos = repositorioSessao.SelecionarTodosIngressos().Count;
+
+        ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
         return View();
     }

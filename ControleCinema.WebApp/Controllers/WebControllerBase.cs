@@ -1,5 +1,6 @@
 ﻿using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -29,5 +30,23 @@ public abstract class WebControllerBase : Controller
         });
 
         return RedirectToAction("Index", "Inicio");
+    }
+
+    protected void ApresentarMensagemFalha(Result resultado)
+    {
+        ViewBag.Mensagem = new MensagemViewModel
+        {
+            Titulo = "Falha",
+            Mensagem = resultado.Errors[0].Message
+        };
+    }
+
+    protected void ApresentarMensagemSucesso(string mensagem)
+    {
+        TempData.SerializarMensagemViewModel(new MensagemViewModel
+        {
+            Titulo = "Sucesso",
+            Mensagem = mensagem
+        });
     }
 }
