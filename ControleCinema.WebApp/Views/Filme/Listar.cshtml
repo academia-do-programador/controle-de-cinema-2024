@@ -2,14 +2,9 @@
 
 @{
     ViewBag.Title = "Listagem de Filmes";
-    MensagemViewModel? mensagem = ViewBag.Mensagem ?? null;
 }
 
 <div class="col">
-    @if (mensagem is not null)
-    {
-        <partial name="_Mensagem" model="mensagem"></partial>
-    }
     <a class="btn btn-primary px-4 mt-3" href="/filme/inserir">
         <i class="bi bi-circle-add"></i>
         Inserir Novo Filme

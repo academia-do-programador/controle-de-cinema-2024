@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ControleCinema.WebApp.Controllers;
 
 [Authorize(Roles = "Empresa")]
-public class GeneroController : AuthController
+public class GeneroController : WebControllerBase
 {
     private readonly IRepositorioGenero repositorioGenero;
 

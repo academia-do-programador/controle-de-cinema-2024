@@ -6,6 +6,8 @@
     var generoAtivo = caminho.StartsWith("/genero") ? "nav-link active fw-semibold" : "nav-link";
     var salaAtivo = caminho.StartsWith("/sala") ? "nav-link active fw-semibold" : "nav-link";
     var funcionarioAtivo = caminho.StartsWith("/funcionario") ? "nav-link active fw-semibold" : "nav-link";
+
+    MensagemViewModel? mensagem = ViewBag.Mensagem ?? null;
 }
 
 <!DOCTYPE html>
@@ -65,6 +67,7 @@
         <div class="row px-2">
             <h1 class="text-light-emphasis">@ViewBag.Title</h1>
             <hr/>
+            <partial name="_Mensagem" model="mensagem"></partial>
             @RenderBody()
         </div>
     </main>

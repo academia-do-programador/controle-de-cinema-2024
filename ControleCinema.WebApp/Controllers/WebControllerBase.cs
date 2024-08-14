@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace ControleCinema.WebApp.Controllers;
 
-public abstract class AuthController : Controller
+public abstract class WebControllerBase : Controller
 {
     protected int? UsuarioId
     {

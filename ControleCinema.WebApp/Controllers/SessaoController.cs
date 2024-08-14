@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ControleCinema.WebApp.Controllers;
 
-public class SessaoController : AuthController
+public class SessaoController : WebControllerBase
 {
     private readonly IRepositorioSala repositorioSala;
     private readonly IRepositorioFilme repositorioFilme;

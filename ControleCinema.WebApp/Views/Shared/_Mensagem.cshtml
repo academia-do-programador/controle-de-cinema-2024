@@ -2,8 +2,11 @@
 
 @if (Model is not null)
 {
-    <div class="alert alert-primary alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle-fill"></i>
+    var corAlerta = Model.Titulo == "Sucesso" ? "alert-success" : "alert-danger";
+    var iconeSelecionado = Model.Titulo == "Sucesso" ? "bi-check-circle-fill" : "bi-info-circle-fill";
+
+    <div class="alert @corAlerta alert-dismissible fade show" role="alert">
+        <i class="bi @iconeSelecionado"></i>
         <strong>@Model.Titulo:</strong> @Model.Mensagem
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>

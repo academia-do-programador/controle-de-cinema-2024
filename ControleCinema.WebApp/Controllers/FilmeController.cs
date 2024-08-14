@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace ControleCinema.WebApp.Controllers;
 
 [Authorize(Roles = "Empresa")]
-public class FilmeController : AuthController
+public class FilmeController : WebControllerBase
 {
     private readonly IRepositorioFilme repositorioFilme;
     private readonly IRepositorioGenero repositorioGenero;
