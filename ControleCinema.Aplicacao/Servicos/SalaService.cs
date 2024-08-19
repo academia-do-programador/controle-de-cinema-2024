@@ -12,55 +12,50 @@ public class SalaService
         this.repositorioSala = repositorioSala;
     }
 
-    public Result<Sala> Inserir(int numero, int capacidade, int usuarioId)
+    public Result<Sala> Inserir(Sala sala)
     {
-        var sala = new Sala(numero, capacidade)
-        {
-            UsuarioId = usuarioId
-        };
-        
         repositorioSala.Inserir(sala);
-        
+
         return Result.Ok(sala);
     }
-    
-    public Result<Sala> Editar(int salaId, int numero, int capacidade)
+
+    public Result<Sala> Editar(Sala salaAtualizada)
     {
-        var sala = repositorioSala.SelecionarPorId(salaId);
-        
+        var sala = repositorioSala.SelecionarPorId(salaAtualizada.Id);
+
         if (sala is null)
             return Result.Fail("A sala não foi encontrada!");
 
-        sala.Numero = numero;
-        sala.Capacidade = capacidade;
+        sala.Numero = salaAtualizada.Numero;
+        sala.Capacidade = salaAtualizada.Capacidade;
 
         repositorioSala.Editar(sala);
 
         return Result.Ok(sala);
     }
-    
+
     public Result Excluir(int salaId)
     {
         var sala = repositorioSala.SelecionarPorId(salaId);
-        
+
         if (sala is null)
             return Result.Fail("A sala não foi encontrada!");
-        
+
         repositorioSala.Excluir(sala);
 
         return Result.Ok();
     }
-    
+
     public Result<Sala> SelecionarPorId(int salaId)
     {
         var sala = repositorioSala.SelecionarPorId(salaId);
-        
+
         if (sala is null)
             return Result.Fail("A sala não foi encontrada!");
 
         return Result.Ok(sala);
     }
-        
+
     public Result<List<Sala>> SelecionarTodos(int usuarioId)
     {
         var salas = repositorioSala

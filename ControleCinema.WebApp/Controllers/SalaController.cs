@@ -1,4 +1,6 @@
-﻿using ControleCinema.Aplicacao.Servicos;
+﻿using AutoMapper;
+using ControleCinema.Aplicacao.Servicos;
+using ControleCinema.Dominio.ModuloSala;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,10 +12,23 @@ namespace ControleCinema.WebApp.Controllers;
 public class SalaController : WebControllerBase
 {
     private readonly SalaService servicoSala;
+    private readonly IMapper mapeador;
 
     public SalaController(SalaService servicoSala)
     {
         this.servicoSala = servicoSala;
+
+        var autoMapperConfig = new MapperConfiguration(opt =>
+        {
+            opt.CreateMap<InserirSalaViewModel, Sala>();
+            opt.CreateMap<EditarSalaViewModel, Sala>();
+
+            opt.CreateMap<Sala, ListarSalaViewModel>();
+            opt.CreateMap<Sala, DetalhesSalaViewModel>();
+            opt.CreateMap<Sala, EditarSalaViewModel>();
+        });
+
+        mapeador = autoMapperConfig.CreateMapper();
     }
 
     public IActionResult Listar()
@@ -29,14 +44,8 @@ public class SalaController : WebControllerBase
         }
 
         var salas = resultado.Value;
-        
-        var listarSalasVm = salas
-            .Select(f => new ListarSalaViewModel
-            {
-                Id = f.Id,
-                Numero = f.Numero,
-                Capacidade = f.Capacidade
-            });
+
+        var listarSalasVm = mapeador.Map<IEnumerable<ListarSalaViewModel>>(salas);
 
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
@@ -54,11 +63,11 @@ public class SalaController : WebControllerBase
         if (!ModelState.IsValid)
             return View(inserirSalaVm);
 
-        var resultado = servicoSala.Inserir(
-            inserirSalaVm.Numero,
-            inserirSalaVm.Capacidade,
-            UsuarioId.GetValueOrDefault()
-        );  
+        var novaSala = mapeador.Map<Sala>(inserirSalaVm);
+
+        novaSala.UsuarioId = UsuarioId.GetValueOrDefault();
+
+        var resultado = servicoSala.Inserir(novaSala);
 
         if (resultado.IsFailed)
         {
@@ -67,9 +76,7 @@ public class SalaController : WebControllerBase
             return RedirectToAction(nameof(Listar));
         }
 
-        var filme = resultado.Value;
-        
-        ApresentarMensagemSucesso($"O registro ID [{filme.Id}] foi inserido com sucesso!");
+        ApresentarMensagemSucesso($"O registro ID [{novaSala.Id}] foi inserido com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -87,12 +94,7 @@ public class SalaController : WebControllerBase
 
         var sala = resultado.Value;
 
-        var editarSalaVm = new EditarSalaViewModel
-        {
-            Id = id,
-            Numero = sala.Numero,
-            Capacidade = sala.Capacidade
-        };
+        var editarSalaVm = mapeador.Map<EditarSalaViewModel>(sala);
 
         return View(editarSalaVm);
     }
@@ -103,23 +105,19 @@ public class SalaController : WebControllerBase
         if (!ModelState.IsValid)
             return View(editarSalaVm);
 
-        var resultado = servicoSala.Editar(
-            editarSalaVm.Id,
-            editarSalaVm.Numero,
-            editarSalaVm.Capacidade
-        );
-        
+        var sala = mapeador.Map<Sala>(editarSalaVm);
+
+        var resultado = servicoSala.Editar(sala);
+
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
 
             return RedirectToAction(nameof(Listar));
         }
-        
-        var sala = resultado.Value;
 
         ApresentarMensagemSucesso($"O registro ID [{sala.Id}] foi editado com sucesso!");
-        
+
         return RedirectToAction(nameof(Listar));
     }
 
@@ -136,12 +134,7 @@ public class SalaController : WebControllerBase
 
         var sala = resultado.Value;
 
-        var detalhesSalaViewModel = new DetalhesSalaViewModel
-        {
-            Id = id,
-            Numero = sala.Numero,
-            Capacidade = sala.Capacidade
-        };
+        var detalhesSalaViewModel = mapeador.Map<DetalhesSalaViewModel>(sala);
 
         return View(detalhesSalaViewModel);
     }
@@ -157,7 +150,7 @@ public class SalaController : WebControllerBase
 
             return RedirectToAction(nameof(Listar));
         }
-        
+
         ApresentarMensagemSucesso($"O registro ID [{detalhesSalaViewModel.Id}] foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
@@ -176,12 +169,7 @@ public class SalaController : WebControllerBase
 
         var sala = resultado.Value;
 
-        var detalhesSalaViewModel = new DetalhesSalaViewModel
-        {
-            Id = id,
-            Numero = sala.Numero,
-            Capacidade = sala.Capacidade
-        };
+        var detalhesSalaViewModel = mapeador.Map<DetalhesSalaViewModel>(sala);
 
         return View(detalhesSalaViewModel);
     }
