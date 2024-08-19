@@ -1,4 +1,5 @@
-﻿using ControleCinema.Aplicacao.Servicos;
+﻿using AutoMapper;
+using ControleCinema.Aplicacao.Servicos;
 using ControleCinema.Dominio.ModuloSessao;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
@@ -12,18 +13,21 @@ public class InicioController : WebControllerBase
     private readonly FilmeService servicoFilme;
     private readonly GeneroService servicoGenero;
     private readonly SalaService servicoSala;
+    private readonly IMapper mapeador;
 
     public InicioController(
         SessaoService servicoSessao,
         FilmeService servicoFilme,
         GeneroService servicoGenero,
-        SalaService servicoSala
+        SalaService servicoSala,
+        IMapper mapeador
     )
     {
         this.servicoSessao = servicoSessao;
         this.servicoFilme = servicoFilme;
         this.servicoGenero = servicoGenero;
         this.servicoSala = servicoSala;
+        this.mapeador = mapeador;
     }
 
     public ViewResult Index()
@@ -31,7 +35,7 @@ public class InicioController : WebControllerBase
         var resultadoAgrupamentos = servicoSessao.ObterSessoesAgrupadasPorFilme();
 
         var agrupamentos = resultadoAgrupamentos.Value;
-        
+
         var agrupamentosSessoesVm = agrupamentos.Select(MapearAgrupamentoSessoes);
 
         ViewBag.Agrupamentos = agrupamentosSessoesVm;
@@ -50,20 +54,12 @@ public class InicioController : WebControllerBase
         return View();
     }
 
-    private static AgrupamentoSessoesPorFilmeViewModel MapearAgrupamentoSessoes(IGrouping<string, Sessao> agrupamento)
+    private AgrupamentoSessoesPorFilmeViewModel MapearAgrupamentoSessoes(IGrouping<string, Sessao> agrupamento)
     {
         return new AgrupamentoSessoesPorFilmeViewModel
         {
             Filme = agrupamento.Key,
-            Sessoes = agrupamento.Select(s => new ListarSessaoViewModel
-            {
-                Id = s.Id,
-                Filme = agrupamento.Key,
-                Sala = s.Sala.Numero.ToString(),
-                IngressosDisponiveis = s.ObterQuantidadeIngressosDisponiveis(),
-                Inicio = s.Inicio.ToString("dd/MM/yyyy HH:mm"),
-                Encerrada = s.Encerrada ? "Encerrada" : "Disponível"
-            })
+            Sessoes = mapeador.Map<IEnumerable<ListarSessaoViewModel>>(agrupamento)
             .OrderBy(s => s.Inicio)
         };
     }

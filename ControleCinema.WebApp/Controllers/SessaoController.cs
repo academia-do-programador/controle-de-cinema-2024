@@ -21,37 +21,14 @@ public class SessaoController : WebControllerBase
     public SessaoController(
         FilmeService servicoFilme,
         SalaService servicoSala,
-        SessaoService servicoSessao
+        SessaoService servicoSessao,
+        IMapper mapeador
     )
     {
         this.servicoFilme = servicoFilme;
         this.servicoSala = servicoSala;
         this.servicoSessao = servicoSessao;
-
-        var autoMapperConfig = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<InserirSessaoViewModel, Sessao>();
-
-            cfg.CreateMap<Sessao, ListarSessaoViewModel>()
-                .ForMember(dest => dest.Filme, opt => opt.MapFrom(src => src.Filme.Titulo))
-                .ForMember(dest => dest.Sala, opt => opt.MapFrom(src => src.Sala.Numero.ToString()))
-                .ForMember(dest => dest.IngressosDisponiveis,
-                    opt => opt.MapFrom(src => src.ObterQuantidadeIngressosDisponiveis()))
-                .ForMember(dest => dest.Inicio, opt => opt.MapFrom(src => src.Inicio.ToString("dd/MM/yyyy HH:mm")))
-                .ForMember(dest => dest.Encerrada,
-                    opt => opt.MapFrom(src => src.Encerrada ? "Encerrada" : "Disponível"));
-
-            cfg.CreateMap<Sessao, DetalhesSessaoViewModel>()
-                .ForMember(dest => dest.Filme, opt => opt.MapFrom(src => src.Filme.Titulo))
-                .ForMember(dest => dest.Sala, opt => opt.MapFrom(src => src.Sala.Numero.ToString()))
-                .ForMember(dest => dest.IngressosDisponiveis,
-                    opt => opt.MapFrom(src => src.ObterQuantidadeIngressosDisponiveis()))
-                .ForMember(dest => dest.Inicio, opt => opt.MapFrom(src => src.Inicio.ToString("dd/MM/yyyy HH:mm")))
-                .ForMember(dest => dest.Encerrada,
-                    opt => opt.MapFrom(src => src.Encerrada ? "Encerrada" : "Disponível"));
-        });
-
-        mapeador = autoMapperConfig.CreateMapper();
+        this.mapeador = mapeador;
     }
 
     [Authorize(Roles = "Empresa")]

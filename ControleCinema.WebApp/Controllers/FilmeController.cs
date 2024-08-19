@@ -1,5 +1,7 @@
-﻿using ControleCinema.Aplicacao.Servicos;
+﻿using AutoMapper;
+using ControleCinema.Aplicacao.Servicos;
 using ControleCinema.Dominio.Extensions;
+using ControleCinema.Dominio.ModuloFilme;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,14 +15,15 @@ public class FilmeController : WebControllerBase
 {
     private readonly FilmeService filmeService;
     private readonly GeneroService generoService;
+    private readonly IMapper mapeador;
 
     public FilmeController(
         FilmeService filmeService,
-        GeneroService generoService
-    )
+        GeneroService generoService, IMapper mapeador)
     {
         this.filmeService = filmeService;
         this.generoService = generoService;
+        this.mapeador = mapeador;
     }
 
     public IActionResult Listar()
@@ -35,7 +38,7 @@ public class FilmeController : WebControllerBase
         }
 
         var filmes = resultado.Value;
-        
+
         var listarFilmesVm = filmes
             .Select(f => new ListarFilmeViewModel
             {
@@ -62,13 +65,11 @@ public class FilmeController : WebControllerBase
         if (!ModelState.IsValid)
             return View(CarregarInformacoesFilme(inserirFilmeVm));
 
-        var resultado = filmeService.Inserir(
-            inserirFilmeVm.Titulo,
-            inserirFilmeVm.Duracao,
-            inserirFilmeVm.Lancamento,
-            inserirFilmeVm.GeneroId,
-            UsuarioId.GetValueOrDefault()
-        );
+        var filme = mapeador.Map<Filme>(inserirFilmeVm);
+
+        var generoId = inserirFilmeVm.GeneroId;
+
+        var resultado = filmeService.Inserir(filme, generoId);
 
         if (resultado.IsFailed)
         {
@@ -76,8 +77,6 @@ public class FilmeController : WebControllerBase
 
             return RedirectToAction(nameof(Listar));
         }
-
-        var filme = resultado.Value; 
 
         ApresentarMensagemSucesso($"O registro ID [{filme.Id}] foi inserido com sucesso!");
 
@@ -95,23 +94,15 @@ public class FilmeController : WebControllerBase
             return RedirectToAction(nameof(Listar));
         }
 
-        var filme = resultadoFilme.Value;
-
-        var resultadoGenero = 
+        var resultadoGenero =
             generoService.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         var generos = resultadoGenero.Value;
 
-        var editarFilmeVm = new EditarFilmeViewModel
-        {
-            Id = id,
-            Titulo = filme.Titulo,
-            Duracao = filme.Duracao,
-            Lancamento = filme.Lancamento,
-            Generos = generos
-                .Select(g => new SelectListItem(g.Descricao, g.Id.ToString())),
-            GeneroId = filme.Genero.Id
-        };
+        var editarFilmeVm = mapeador.Map<EditarFilmeViewModel>(resultadoFilme.Value);
+
+        editarFilmeVm.Generos = generos
+            .Select(g => new SelectListItem(g.Descricao, g.Id.ToString()));
 
         return View(editarFilmeVm);
     }
@@ -122,21 +113,17 @@ public class FilmeController : WebControllerBase
         if (!ModelState.IsValid)
             return View(CarregarInformacoesFilme(editarFilmeVm));
 
-        var resultado = filmeService.Editar(
-            editarFilmeVm.Id,
-            editarFilmeVm.Titulo,
-            editarFilmeVm.Duracao,
-            editarFilmeVm.Lancamento,
-            editarFilmeVm.GeneroId
-        );
-        
+        var filme = mapeador.Map<Filme>(editarFilmeVm);
+
+        var resultado = filmeService.Editar(filme, editarFilmeVm.GeneroId);
+
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
 
             return RedirectToAction(nameof(Listar));
         }
-        
+
         ApresentarMensagemSucesso($"O registro ID [{editarFilmeVm.Id}] foi editado com sucesso!");
 
         return RedirectToAction(nameof(Listar));
@@ -154,15 +141,8 @@ public class FilmeController : WebControllerBase
         }
 
         var filme = resultado.Value;
-        
-        var detalhesFilmeViewModel = new DetalhesFilmeViewModel
-        {
-            Id = id,
-            Titulo = filme.Titulo,
-            Duracao = filme.Duracao.FormatarEmHorasEMinutos(),
-            Lancamento = filme.Lancamento ? "Lançamento" : "Re-Exibição",
-            Genero = filme.Genero.Descricao
-        };
+
+        var detalhesFilmeViewModel = mapeador.Map<DetalhesFilmeViewModel>(filme);
 
         return View(detalhesFilmeViewModel);
     }
@@ -197,14 +177,7 @@ public class FilmeController : WebControllerBase
 
         var filme = resultado.Value;
 
-        var detalhesFilmeViewModel = new DetalhesFilmeViewModel
-        {
-            Id = id,
-            Titulo = filme.Titulo,
-            Duracao = filme.Duracao.FormatarEmHorasEMinutos(),
-            Lancamento = filme.Lancamento ? "Lançamento" : "Re-Exibição",
-            Genero = filme.Genero.Descricao
-        };
+        var detalhesFilmeViewModel = mapeador.Map<DetalhesFilmeViewModel>(filme);
 
         return View(detalhesFilmeViewModel);
     }
@@ -213,7 +186,7 @@ public class FilmeController : WebControllerBase
     {
         var resultadoGeneros =
             generoService.SelecionarTodos(UsuarioId.GetValueOrDefault());
-        
+
         if (resultadoGeneros.IsFailed)
         {
             ApresentarMensagemFalha(resultadoGeneros.ToResult());

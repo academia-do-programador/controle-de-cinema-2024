@@ -11,6 +11,7 @@ using ControleCinema.Infra.Orm.ModuloSala;
 using ControleCinema.Infra.Orm.ModuloSessao;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using System.Reflection;
 
 namespace ControleCinema.WebApp;
 
@@ -62,6 +63,11 @@ public class Program
         {
             options.LoginPath = "/Usuario/Login";
             options.AccessDeniedPath = "/Usuario/AcessoNegado";
+        });
+
+        builder.Services.AddAutoMapper(cfg =>
+        {
+            cfg.AddMaps(Assembly.GetExecutingAssembly());
         });
 
         #endregion

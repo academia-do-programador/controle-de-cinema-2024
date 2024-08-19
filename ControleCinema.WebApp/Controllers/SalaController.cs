@@ -14,21 +14,10 @@ public class SalaController : WebControllerBase
     private readonly SalaService servicoSala;
     private readonly IMapper mapeador;
 
-    public SalaController(SalaService servicoSala)
+    public SalaController(SalaService servicoSala, IMapper mapeador)
     {
         this.servicoSala = servicoSala;
-
-        var autoMapperConfig = new MapperConfiguration(opt =>
-        {
-            opt.CreateMap<InserirSalaViewModel, Sala>();
-            opt.CreateMap<EditarSalaViewModel, Sala>();
-
-            opt.CreateMap<Sala, ListarSalaViewModel>();
-            opt.CreateMap<Sala, DetalhesSalaViewModel>();
-            opt.CreateMap<Sala, EditarSalaViewModel>();
-        });
-
-        mapeador = autoMapperConfig.CreateMapper();
+        this.mapeador = mapeador;
     }
 
     public IActionResult Listar()

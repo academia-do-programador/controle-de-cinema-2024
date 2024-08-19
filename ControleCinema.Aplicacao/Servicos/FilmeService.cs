@@ -16,68 +16,65 @@ public class FilmeService
         this.repositorioGenero = repositorioGenero;
     }
 
-    public Result<Filme> Inserir(string titulo, int duracao, bool lancamento, int generoId, int usuarioId)
+    public Result<Filme> Inserir(Filme filme, int generoId)
     {
         var generoSelecionado = repositorioGenero.SelecionarPorId(generoId);
 
         if (generoSelecionado is null)
             return Result.Fail("O gênero informado não foi encontrado!");
 
-        var filme = new Filme(titulo, duracao, generoSelecionado, lancamento)
-        {
-            UsuarioId = usuarioId
-        };
-        
+        filme.Genero = generoSelecionado;
+
         repositorioFilme.Inserir(filme);
-        
+
         return Result.Ok(filme);
     }
-    
-    public Result<Filme> Editar(int filmeId, string titulo, int duracao, bool lancamento, int generoId)
+
+    public Result<Filme> Editar(Filme filmeAtualizado, int generoId)
     {
-        var filme = repositorioFilme.SelecionarPorId(filmeId);
-        
+        var filme = repositorioFilme.SelecionarPorId(filmeAtualizado.Id);
+
         if (filme is null)
             return Result.Fail("O filme não foi encontrado!");
-        
+
         var generoSelecionado =
             repositorioGenero.SelecionarPorId(generoId);
-        
+
         if (generoSelecionado is null)
             return Result.Fail("O gênero informado não foi encontrado!");
 
-        filme.Titulo = titulo;
-        filme.Duracao = duracao;
-        filme.Lancamento = lancamento;
+        filme.Titulo = filmeAtualizado.Titulo;
+        filme.Duracao = filmeAtualizado.Duracao;
+        filme.Lancamento = filmeAtualizado.Lancamento;
         filme.Genero = generoSelecionado;
 
         repositorioFilme.Editar(filme);
 
         return Result.Ok(filme);
     }
-    
+
     public Result Excluir(int filmeId)
     {
         var filme = repositorioFilme.SelecionarPorId(filmeId);
-        
+
         if (filme is null)
             return Result.Fail("O filme não foi encontrado!");
-        
+
         repositorioFilme.Excluir(filme);
 
         return Result.Ok();
     }
-    
+
     public Result<Filme> SelecionarPorId(int filmeId)
     {
         var filme = repositorioFilme.SelecionarPorId(filmeId);
-        
+
         if (filme is null)
             return Result.Fail("O filme não foi encontrado!");
 
         return Result.Ok(filme);
     }
-        
+
     public Result<List<Filme>> SelecionarTodos(int usuarioId)
     {
         var filmes = repositorioFilme

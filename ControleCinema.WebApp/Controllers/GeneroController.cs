@@ -1,4 +1,5 @@
-﻿using ControleCinema.Aplicacao.Servicos;
+﻿using AutoMapper;
+using ControleCinema.Aplicacao.Servicos;
 using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
@@ -11,12 +12,15 @@ namespace ControleCinema.WebApp.Controllers;
 public class GeneroController : WebControllerBase
 {
     private readonly GeneroService servicoGenero;
+    private readonly IMapper mapeador;
 
     public GeneroController(
-        GeneroService servicoGenero
+        GeneroService servicoGenero,
+        IMapper mapeador
     )
     {
         this.servicoGenero = servicoGenero;
+        this.mapeador = mapeador;
     }
 
     public IActionResult Listar()
@@ -32,12 +36,7 @@ public class GeneroController : WebControllerBase
 
         var generos = resultado.Value;
 
-        var listarGenerosVm = generos
-            .Select(f => new ListarGeneroViewModel
-            {
-                Id = f.Id,
-                Descricao = f.Descricao
-            });
+        var listarGenerosVm = mapeador.Map<IEnumerable<ListarGeneroViewModel>>(generos);
 
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
@@ -55,10 +54,11 @@ public class GeneroController : WebControllerBase
         if (!ModelState.IsValid)
             return View(inserirGeneroVm);
 
-        var resultado = servicoGenero.Inserir(
-            inserirGeneroVm.Descricao,
-            UsuarioId.GetValueOrDefault()
-        );
+        var genero = mapeador.Map<Genero>(inserirGeneroVm);
+
+        genero.UsuarioId = UsuarioId.GetValueOrDefault();
+
+        var resultado = servicoGenero.Inserir(genero);
 
         if (resultado.IsFailed)
         {
@@ -67,10 +67,8 @@ public class GeneroController : WebControllerBase
             return RedirectToAction(nameof(Listar));
         }
 
-        var genero = resultado.Value; 
-
         ApresentarMensagemSucesso($"O registro ID [{genero.Id}] foi inserido com sucesso!");
-        
+
         return RedirectToAction(nameof(Listar));
     }
 
@@ -86,7 +84,7 @@ public class GeneroController : WebControllerBase
         }
 
         var genero = resultado.Value;
-        
+
         var editarGeneroVm = new EditarGeneroViewModel
         {
             Id = id,
@@ -102,18 +100,17 @@ public class GeneroController : WebControllerBase
         if (!ModelState.IsValid)
             return View(editarGeneroVm);
 
-        var resultado = servicoGenero.Editar(
-            editarGeneroVm.Id,
-            editarGeneroVm.Descricao
-        );
-        
+        var genero = mapeador.Map<Genero>(editarGeneroVm);
+
+        var resultado = servicoGenero.Editar(genero);
+
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
 
             return RedirectToAction(nameof(Listar));
         }
-        
+
         ApresentarMensagemSucesso($"O registro ID [{editarGeneroVm.Id}] foi editado com sucesso!");
 
         return RedirectToAction(nameof(Listar));
@@ -132,11 +129,7 @@ public class GeneroController : WebControllerBase
 
         var genero = resultado.Value;
 
-        var detalhesGeneroViewModel = new DetalhesGeneroViewModel
-        {
-            Id = id,
-            Descricao = genero.Descricao
-        };
+        var detalhesGeneroViewModel = mapeador.Map<DetalhesGeneroViewModel>(genero);
 
         return View(detalhesGeneroViewModel);
     }
@@ -171,11 +164,7 @@ public class GeneroController : WebControllerBase
 
         var genero = resultado.Value;
 
-        var detalhesGeneroViewModel = new DetalhesGeneroViewModel
-        {
-            Id = id,
-            Descricao = genero.Descricao
-        };
+        var detalhesGeneroViewModel = mapeador.Map<DetalhesGeneroViewModel>(genero);
 
         return View(detalhesGeneroViewModel);
     }

@@ -12,54 +12,49 @@ public class GeneroService
         this.repositorioGenero = repositorioGenero;
     }
 
-    public Result<Genero> Inserir(string descricao, int usuarioId)
+    public Result<Genero> Inserir(Genero genero)
     {
-        var genero = new Genero(descricao)
-        {
-            UsuarioId = usuarioId
-        };
-        
         repositorioGenero.Inserir(genero);
-        
+
         return Result.Ok(genero);
     }
-    
-    public Result<Genero> Editar(int generoId, string descricao)
+
+    public Result<Genero> Editar(Genero generoAtualizado)
     {
-        var genero = repositorioGenero.SelecionarPorId(generoId);
-        
+        var genero = repositorioGenero.SelecionarPorId(generoAtualizado.Id);
+
         if (genero is null)
             return Result.Fail("O genero não foi encontrado!");
 
-        genero.Descricao = descricao;
+        genero.Descricao = generoAtualizado.Descricao;
 
         repositorioGenero.Editar(genero);
 
         return Result.Ok(genero);
     }
-    
+
     public Result Excluir(int generoId)
     {
         var genero = repositorioGenero.SelecionarPorId(generoId);
-        
+
         if (genero is null)
             return Result.Fail("O genero não foi encontrado!");
-        
+
         repositorioGenero.Excluir(genero);
 
         return Result.Ok();
     }
-    
+
     public Result<Genero> SelecionarPorId(int generoId)
     {
         var genero = repositorioGenero.SelecionarPorId(generoId);
-        
+
         if (genero is null)
             return Result.Fail("O genero não foi encontrado!");
 
         return Result.Ok(genero);
     }
-        
+
     public Result<List<Genero>> SelecionarTodos(int usuarioId)
     {
         var generos = repositorioGenero
