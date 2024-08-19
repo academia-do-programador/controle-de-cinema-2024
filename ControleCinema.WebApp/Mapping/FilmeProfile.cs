@@ -13,7 +13,7 @@ public class FilmeProfile : Profile
         CreateMap<EditarFilmeViewModel, Filme>();
 
         CreateMap<Filme, EditarFilmeViewModel>()
-            .ForMember(dest => dest.GeneroId, opt => opt.MapFrom(src => src.Genero.Id))
+            .ForMember(dest => dest.GeneroId, opt => opt.MapFrom(src => src.Genero.Id));
 
 
         CreateMap<Filme, ListarFilmeViewModel>()
