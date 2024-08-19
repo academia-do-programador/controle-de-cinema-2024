@@ -1,6 +1,4 @@
-﻿using ControleCinema.Dominio.ModuloFilme;
-using ControleCinema.Dominio.ModuloGenero;
-using ControleCinema.Dominio.ModuloSala;
+﻿using ControleCinema.Aplicacao.Servicos;
 using ControleCinema.Dominio.ModuloSessao;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
@@ -8,40 +6,44 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ControleCinema.WebApp.Controllers;
 
-public class InicioController : Controller
+public class InicioController : WebControllerBase
 {
-    private readonly IRepositorioSessao repositorioSessao;
-    private readonly IRepositorioFilme repositorioFilme;
-    private readonly IRepositorioGenero repositorioGenero;
-    private readonly IRepositorioSala repositorioSala;
+    private readonly SessaoService servicoSessao;
+    private readonly FilmeService servicoFilme;
+    private readonly GeneroService servicoGenero;
+    private readonly SalaService servicoSala;
 
     public InicioController(
-        IRepositorioSessao repositorioSessao,
-        IRepositorioFilme repositorioFilme,
-        IRepositorioGenero repositorioGenero,
-        IRepositorioSala repositorioSala
+        SessaoService servicoSessao,
+        FilmeService servicoFilme,
+        GeneroService servicoGenero,
+        SalaService servicoSala
     )
     {
-        this.repositorioSessao = repositorioSessao;
-        this.repositorioFilme = repositorioFilme;
-        this.repositorioGenero = repositorioGenero;
-        this.repositorioSala = repositorioSala;
+        this.servicoSessao = servicoSessao;
+        this.servicoFilme = servicoFilme;
+        this.servicoGenero = servicoGenero;
+        this.servicoSala = servicoSala;
     }
 
     public ViewResult Index()
     {
-        var agrupamentos = repositorioSessao.ObterSessoesAgrupadasPorFilme();
+        var resultadoAgrupamentos = servicoSessao.ObterSessoesAgrupadasPorFilme();
 
-        var agrupamentosSessoesVm = agrupamentos
-            .Select(MapearAgrupamentoSessoes);
+        var agrupamentos = resultadoAgrupamentos.Value;
+        
+        var agrupamentosSessoesVm = agrupamentos.Select(MapearAgrupamentoSessoes);
 
         ViewBag.Agrupamentos = agrupamentosSessoesVm;
 
-        ViewBag.QuantidadeFilmes = repositorioFilme.SelecionarTodos().Count;
-        ViewBag.QuantidadeGeneros = repositorioGenero.SelecionarTodos().Count;
-        ViewBag.QuantidadeSalas = repositorioSala.SelecionarTodos().Count;
-        ViewBag.QuantidadeSessoes = repositorioSessao.SelecionarTodos().Count;
-        ViewBag.QuantidadeIngressos = repositorioSessao.SelecionarTodosIngressos().Count;
+        if (UsuarioId.HasValue)
+        {
+            ViewBag.QuantidadeFilmes = servicoFilme.SelecionarTodos(UsuarioId.Value).Value.Count;
+            ViewBag.QuantidadeGeneros = servicoGenero.SelecionarTodos(UsuarioId.Value).Value.Count;
+            ViewBag.QuantidadeSalas = servicoSala.SelecionarTodos(UsuarioId.Value).Value.Count;
+            ViewBag.QuantidadeSessoes = servicoSessao.SelecionarTodos(UsuarioId.Value).Value.Count;
+            ViewBag.QuantidadeIngressos = servicoSessao.SelecionarTodosIngressos(UsuarioId.Value).Value.Count;
+        }
 
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 

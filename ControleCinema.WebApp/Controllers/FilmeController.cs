@@ -1,6 +1,5 @@
-﻿using ControleCinema.Dominio.Extensions;
-using ControleCinema.Dominio.ModuloFilme;
-using ControleCinema.Dominio.ModuloGenero;
+﻿using ControleCinema.Aplicacao.Servicos;
+using ControleCinema.Dominio.Extensions;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -12,23 +11,31 @@ namespace ControleCinema.WebApp.Controllers;
 [Authorize(Roles = "Empresa")]
 public class FilmeController : WebControllerBase
 {
-    private readonly IRepositorioFilme repositorioFilme;
-    private readonly IRepositorioGenero repositorioGenero;
+    private readonly FilmeService filmeService;
+    private readonly GeneroService generoService;
 
     public FilmeController(
-        IRepositorioFilme repositorioFilme,
-        IRepositorioGenero repositorioGenero
+        FilmeService filmeService,
+        GeneroService generoService
     )
     {
-        this.repositorioFilme = repositorioFilme;
-        this.repositorioGenero = repositorioGenero;
+        this.filmeService = filmeService;
+        this.generoService = generoService;
     }
 
     public IActionResult Listar()
     {
-        var filmes = repositorioFilme
-            .Filtrar(f => f.UsuarioId == UsuarioId);
+        var resultado = filmeService.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction("Index", "Inicio");
+        }
+
+        var filmes = resultado.Value;
+        
         var listarFilmesVm = filmes
             .Select(f => new ListarFilmeViewModel
             {
@@ -46,61 +53,54 @@ public class FilmeController : WebControllerBase
 
     public IActionResult Inserir()
     {
-        var generosDeFilme = repositorioGenero.SelecionarTodos();
-
-        var inserirFilmeVm = new InserirFilmeViewModel
-        {
-            Generos = generosDeFilme
-                .Select(g => new SelectListItem(g.Descricao, g.Id.ToString()))
-        };
-
-        return View(inserirFilmeVm);
+        return View(CarregarInformacoesFilme(new InserirFilmeViewModel()));
     }
 
     [HttpPost]
     public IActionResult Inserir(InserirFilmeViewModel inserirFilmeVm)
     {
         if (!ModelState.IsValid)
+            return View(CarregarInformacoesFilme(inserirFilmeVm));
+
+        var resultado = filmeService.Inserir(
+            inserirFilmeVm.Titulo,
+            inserirFilmeVm.Duracao,
+            inserirFilmeVm.Lancamento,
+            inserirFilmeVm.GeneroId,
+            UsuarioId.GetValueOrDefault()
+        );
+
+        if (resultado.IsFailed)
         {
-            var generosDeFilme = repositorioGenero.SelecionarTodos();
+            ApresentarMensagemFalha(resultado.ToResult());
 
-            inserirFilmeVm.Generos = generosDeFilme
-                .Select(g => new SelectListItem(g.Descricao, g.Id.ToString()));
-
-            return View(inserirFilmeVm);
+            return RedirectToAction(nameof(Listar));
         }
 
-        var generoSelecionado =
-            repositorioGenero.SelecionarPorId(inserirFilmeVm.GeneroId.GetValueOrDefault());
+        var filme = resultado.Value; 
 
-        var filme = new Filme()
-        {
-            Titulo = inserirFilmeVm.Titulo,
-            Lancamento = inserirFilmeVm.Lancamento,
-            Duracao = inserirFilmeVm.Duracao,
-            Genero = generoSelecionado!,
-            UsuarioId = UsuarioId.GetValueOrDefault()
-        };
-
-        repositorioFilme.Inserir(filme);
-
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
-        {
-            Titulo = "Sucesso",
-            Mensagem = $"O registro ID [{filme.Id}] foi inserido com sucesso!"
-        });
+        ApresentarMensagemSucesso($"O registro ID [{filme.Id}] foi inserido com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
 
     public IActionResult Editar(int id)
     {
-        var filme = repositorioFilme.SelecionarPorId(id);
+        var resultadoFilme = filmeService.SelecionarPorId(id);
 
-        if (filme is null)
-            return MensagemRegistroNaoEncontrado(id);
+        if (resultadoFilme.IsFailed)
+        {
+            ApresentarMensagemFalha(resultadoFilme.ToResult());
 
-        var generosDeFilme = repositorioGenero.SelecionarTodos();
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var filme = resultadoFilme.Value;
+
+        var resultadoGenero = 
+            generoService.SelecionarTodos(UsuarioId.GetValueOrDefault());
+
+        var generos = resultadoGenero.Value;
 
         var editarFilmeVm = new EditarFilmeViewModel
         {
@@ -108,7 +108,7 @@ public class FilmeController : WebControllerBase
             Titulo = filme.Titulo,
             Duracao = filme.Duracao,
             Lancamento = filme.Lancamento,
-            Generos = generosDeFilme
+            Generos = generos
                 .Select(g => new SelectListItem(g.Descricao, g.Id.ToString())),
             GeneroId = filme.Genero.Id
         };
@@ -120,43 +120,41 @@ public class FilmeController : WebControllerBase
     public IActionResult Editar(EditarFilmeViewModel editarFilmeVm)
     {
         if (!ModelState.IsValid)
+            return View(CarregarInformacoesFilme(editarFilmeVm));
+
+        var resultado = filmeService.Editar(
+            editarFilmeVm.Id,
+            editarFilmeVm.Titulo,
+            editarFilmeVm.Duracao,
+            editarFilmeVm.Lancamento,
+            editarFilmeVm.GeneroId
+        );
+        
+        if (resultado.IsFailed)
         {
-            var generosDeFilme = repositorioGenero.SelecionarTodos();
+            ApresentarMensagemFalha(resultado.ToResult());
 
-            editarFilmeVm.Generos = generosDeFilme
-                .Select(g => new SelectListItem(g.Descricao, g.Id.ToString()));
-
-            return View(editarFilmeVm);
+            return RedirectToAction(nameof(Listar));
         }
-
-        var generoSelecionado =
-            repositorioGenero.SelecionarPorId(editarFilmeVm.GeneroId);
-
-        var filme = repositorioFilme.SelecionarPorId(editarFilmeVm.Id);
-
-        filme!.Titulo = editarFilmeVm.Titulo;
-        filme!.Duracao = editarFilmeVm.Duracao;
-        filme!.Lancamento = editarFilmeVm.Lancamento;
-        filme!.Genero = generoSelecionado;
-
-        repositorioFilme.Editar(filme);
-
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
-        {
-            Titulo = "Sucesso",
-            Mensagem = $"O registro ID [{filme.Id}] foi editado com sucesso!"
-        });
+        
+        ApresentarMensagemSucesso($"O registro ID [{editarFilmeVm.Id}] foi editado com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
 
     public IActionResult Excluir(int id)
     {
-        var filme = repositorioFilme.SelecionarPorId(id);
+        var resultado = filmeService.SelecionarPorId(id);
 
-        if (filme is null)
-            return MensagemRegistroNaoEncontrado(id);
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
 
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var filme = resultado.Value;
+        
         var detalhesFilmeViewModel = new DetalhesFilmeViewModel
         {
             Id = id,
@@ -172,28 +170,32 @@ public class FilmeController : WebControllerBase
     [HttpPost]
     public IActionResult Excluir(DetalhesFilmeViewModel detalhesFilmeViewModel)
     {
-        var filme = repositorioFilme.SelecionarPorId(detalhesFilmeViewModel.Id);
+        var resultado = filmeService.Excluir(detalhesFilmeViewModel.Id);
 
-        if (filme is null)
-            return MensagemRegistroNaoEncontrado(detalhesFilmeViewModel.Id);
-
-        repositorioFilme.Excluir(filme);
-
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
+        if (resultado.IsFailed)
         {
-            Titulo = "Sucesso",
-            Mensagem = $"O registro ID [{filme.Id}] foi excluído com sucesso!"
-        });
+            ApresentarMensagemFalha(resultado);
+
+            return RedirectToAction(nameof(Listar));
+        }
+
+        ApresentarMensagemSucesso($"O registro ID [{detalhesFilmeViewModel.Id}] foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
 
     public IActionResult Detalhes(int id)
     {
-        var filme = repositorioFilme.SelecionarPorId(id);
+        var resultado = filmeService.SelecionarPorId(id);
 
-        if (filme is null)
-            return MensagemRegistroNaoEncontrado(id);
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var filme = resultado.Value;
 
         var detalhesFilmeViewModel = new DetalhesFilmeViewModel
         {
@@ -205,5 +207,25 @@ public class FilmeController : WebControllerBase
         };
 
         return View(detalhesFilmeViewModel);
+    }
+
+    private FormFilmeViewModel? CarregarInformacoesFilme(FormFilmeViewModel inserirFilmeVm)
+    {
+        var resultadoGeneros =
+            generoService.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        
+        if (resultadoGeneros.IsFailed)
+        {
+            ApresentarMensagemFalha(resultadoGeneros.ToResult());
+
+            return null;
+        }
+
+        var generos = resultadoGeneros.Value;
+
+        inserirFilmeVm.Generos = generos
+            .Select(g => new SelectListItem(g.Descricao, g.Id.ToString()));
+
+        return inserirFilmeVm;
     }
 }

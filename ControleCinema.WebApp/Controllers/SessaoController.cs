@@ -1,9 +1,8 @@
-﻿using ControleCinema.Aplicacao.Services;
-using ControleCinema.Dominio.ModuloFilme;
-using ControleCinema.Dominio.ModuloSala;
+﻿using ControleCinema.Aplicacao.Servicos;
 using ControleCinema.Dominio.ModuloSessao;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,30 +11,36 @@ namespace ControleCinema.WebApp.Controllers;
 
 public class SessaoController : WebControllerBase
 {
-    private readonly IRepositorioSala repositorioSala;
-    private readonly IRepositorioFilme repositorioFilme;
-    private readonly IRepositorioSessao repositorioSessao;
+    private readonly FilmeService servicoFilme;
+    private readonly SalaService servicoSala;
     private readonly SessaoService servicoSessao;
 
     public SessaoController(
-        IRepositorioFilme repositorioFilme,
-        IRepositorioSala repositorioSala,
-        IRepositorioSessao repositorioSessao,
+        FilmeService servicoFilme,
+        SalaService servicoSala,
         SessaoService servicoSessao
     )
     {
-        this.repositorioFilme = repositorioFilme;
-        this.repositorioSessao = repositorioSessao;
+        this.servicoFilme = servicoFilme;
+        this.servicoSala = servicoSala;
         this.servicoSessao = servicoSessao;
-        this.repositorioSala = repositorioSala;
     }
 
     [Authorize(Roles = "Empresa")]
     public IActionResult Listar()
     {
-        var agrupamentos = repositorioSessao
+        var resultado = servicoSessao
             .ObterSessoesAgrupadasPorFilme(UsuarioId.GetValueOrDefault());
 
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var agrupamentos = resultado.Value;
+        
         var agrupamentosSessoesVm = agrupamentos
             .Select(MapearAgrupamentoSessoes);
 
@@ -71,9 +76,7 @@ public class SessaoController : WebControllerBase
             return View(CarregarInformacoes(inserirSessaoVm));
         }
 
-        ApresentarMensagemSucesso(
-            $"O registro ID [{resultado.Value.Id}] foi inserido com sucesso!"
-        );
+        ApresentarMensagemSucesso($"O registro ID [{resultado.Value.Id}] foi inserido com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -81,10 +84,16 @@ public class SessaoController : WebControllerBase
     [Authorize(Roles = "Empresa")]
     public IActionResult Encerrar(int id)
     {
-        var sessao = repositorioSessao.SelecionarPorId(id);
+        var resultado = servicoSessao.SelecionarPorId(id);
+        
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
 
-        if (sessao is null)
-            return MensagemRegistroNaoEncontrado(id);
+            return RedirectToAction(nameof(Detalhes), new { id });
+        }
+
+        var sessao = resultado.Value;
 
         var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
 
@@ -111,10 +120,16 @@ public class SessaoController : WebControllerBase
     [Authorize(Roles = "Empresa")]
     public IActionResult Excluir(int id)
     {
-        var sessao = repositorioSessao.SelecionarPorId(id);
+        var resultado = servicoSessao.SelecionarPorId(id);
+        
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
 
-        if (sessao is null)
-            return MensagemRegistroNaoEncontrado(id);
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var sessao = resultado.Value;
 
         var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
 
@@ -128,12 +143,12 @@ public class SessaoController : WebControllerBase
 
         if (resultado.IsFailed)
         {
-            ApresentarMensagemFalha(resultado.ToResult());
+            ApresentarMensagemFalha(resultado);
 
             return RedirectToAction(nameof(Listar));
         }
 
-        ApresentarMensagemSucesso($"A sessão ID [{resultado.Value.Id}] foi excluída com sucesso!");
+        ApresentarMensagemSucesso($"A sessão ID [{detalhesSessaoViewModel.Id}] foi excluída com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -141,10 +156,16 @@ public class SessaoController : WebControllerBase
     [Authorize(Roles = "Empresa,Cliente")]
     public IActionResult Detalhes(int id)
     {
-        var sessao = repositorioSessao.SelecionarPorId(id);
+        var resultado = servicoSessao.SelecionarPorId(id);
+        
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
 
-        if (sessao is null)
-            return MensagemRegistroNaoEncontrado(id);
+            return RedirectToAction(nameof(Listar));
+        }
+        
+        var sessao = resultado.Value;
 
         var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
 
@@ -155,10 +176,16 @@ public class SessaoController : WebControllerBase
     [HttpGet, Route("/sessao/comprar-ingresso/{id:int}")]
     public IActionResult ComprarIngresso(int id)
     {
-        var sessao = repositorioSessao.SelecionarPorId(id);
+        var resultado = servicoSessao.SelecionarPorId(id);
+        
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
 
-        if (sessao is null)
-            return MensagemRegistroNaoEncontrado(id);
+            return RedirectToAction(nameof(Listar));
+        }
+        
+        var sessao = resultado.Value;
 
         var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
 
@@ -193,14 +220,23 @@ public class SessaoController : WebControllerBase
 
         ApresentarMensagemSucesso($"O ingresso para a sessão ID [{resultado.Value.Id}] foi gerado com sucesso!");
 
-
         return RedirectToAction("Index", "Inicio");
     }
 
-    private InserirSessaoViewModel CarregarInformacoes(InserirSessaoViewModel inserirSessaoVm)
+    private InserirSessaoViewModel? CarregarInformacoes(InserirSessaoViewModel inserirSessaoVm)
     {
-        var filmes = repositorioFilme.SelecionarTodos();
-        var salas = repositorioSala.SelecionarTodos();
+        var resultadoFilmes = servicoFilme.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultadoSalas = servicoSala.SelecionarTodos(UsuarioId.GetValueOrDefault());
+
+        if (resultadoFilmes.IsFailed || resultadoSalas.IsFailed)
+        {
+            ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
+
+            return null;
+        }
+
+        var salas = resultadoSalas.Value;
+        var filmes = resultadoFilmes.Value;
 
         inserirSessaoVm.Salas = salas.Select(s =>
             new SelectListItem(s.Numero.ToString(), s.Id.ToString()));

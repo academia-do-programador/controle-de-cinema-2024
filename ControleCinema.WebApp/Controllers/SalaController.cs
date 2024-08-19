@@ -1,4 +1,4 @@
-﻿using ControleCinema.Dominio.ModuloSala;
+﻿using ControleCinema.Aplicacao.Servicos;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -9,18 +9,27 @@ namespace ControleCinema.WebApp.Controllers;
 [Authorize(Roles = "Empresa")]
 public class SalaController : WebControllerBase
 {
-    private readonly IRepositorioSala repositorioSala;
+    private readonly SalaService servicoSala;
 
-    public SalaController(IRepositorioSala repositorioSala)
+    public SalaController(SalaService servicoSala)
     {
-        this.repositorioSala = repositorioSala;
+        this.servicoSala = servicoSala;
     }
 
     public IActionResult Listar()
     {
-        var salas = repositorioSala
-            .Filtrar(s => s.UsuarioId == UsuarioId);
+        var resultado = servicoSala
+            .SelecionarTodos(UsuarioId.GetValueOrDefault());
 
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction("Index", "Inicio");
+        }
+
+        var salas = resultado.Value;
+        
         var listarSalasVm = salas
             .Select(f => new ListarSalaViewModel
             {
@@ -45,30 +54,38 @@ public class SalaController : WebControllerBase
         if (!ModelState.IsValid)
             return View(inserirSalaVm);
 
-        var sala = new Sala()
-        {
-            Numero = inserirSalaVm.Numero,
-            Capacidade = inserirSalaVm.Capacidade,
-            UsuarioId = UsuarioId.GetValueOrDefault()
-        };
+        var resultado = servicoSala.Inserir(
+            inserirSalaVm.Numero,
+            inserirSalaVm.Capacidade,
+            UsuarioId.GetValueOrDefault()
+        );  
 
-        repositorioSala.Inserir(sala);
-
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
+        if (resultado.IsFailed)
         {
-            Titulo = "Sucesso",
-            Mensagem = $"O registro ID [{sala.Id}] foi inserido com sucesso!"
-        });
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var filme = resultado.Value;
+        
+        ApresentarMensagemSucesso($"O registro ID [{filme.Id}] foi inserido com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
 
     public IActionResult Editar(int id)
     {
-        var sala = repositorioSala.SelecionarPorId(id);
+        var resultado = servicoSala.SelecionarPorId(id);
 
-        if (sala is null)
-            return MensagemRegistroNaoEncontrado(id);
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var sala = resultado.Value;
 
         var editarSalaVm = new EditarSalaViewModel
         {
@@ -86,28 +103,38 @@ public class SalaController : WebControllerBase
         if (!ModelState.IsValid)
             return View(editarSalaVm);
 
-        var sala = repositorioSala.SelecionarPorId(editarSalaVm.Id);
-
-        sala!.Numero = editarSalaVm.Numero;
-        sala!.Capacidade = editarSalaVm.Capacidade;
-
-        repositorioSala.Editar(sala);
-
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
+        var resultado = servicoSala.Editar(
+            editarSalaVm.Id,
+            editarSalaVm.Numero,
+            editarSalaVm.Capacidade
+        );
+        
+        if (resultado.IsFailed)
         {
-            Titulo = "Sucesso",
-            Mensagem = $"O registro ID [{sala.Id}] foi editado com sucesso!"
-        });
+            ApresentarMensagemFalha(resultado.ToResult());
 
+            return RedirectToAction(nameof(Listar));
+        }
+        
+        var sala = resultado.Value;
+
+        ApresentarMensagemSucesso($"O registro ID [{sala.Id}] foi editado com sucesso!");
+        
         return RedirectToAction(nameof(Listar));
     }
 
     public IActionResult Excluir(int id)
     {
-        var sala = repositorioSala.SelecionarPorId(id);
+        var resultado = servicoSala.SelecionarPorId(id);
 
-        if (sala is null)
-            return MensagemRegistroNaoEncontrado(id);
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var sala = resultado.Value;
 
         var detalhesSalaViewModel = new DetalhesSalaViewModel
         {
@@ -122,28 +149,32 @@ public class SalaController : WebControllerBase
     [HttpPost]
     public IActionResult Excluir(DetalhesSalaViewModel detalhesSalaViewModel)
     {
-        var sala = repositorioSala.SelecionarPorId(detalhesSalaViewModel.Id);
+        var resultado = servicoSala.Excluir(detalhesSalaViewModel.Id);
 
-        if (sala is null)
-            return MensagemRegistroNaoEncontrado(detalhesSalaViewModel.Id);
-
-        repositorioSala.Excluir(sala);
-
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
+        if (resultado.IsFailed)
         {
-            Titulo = "Sucesso",
-            Mensagem = $"O registro ID [{sala.Id}] foi excluído com sucesso!"
-        });
+            ApresentarMensagemFalha(resultado);
+
+            return RedirectToAction(nameof(Listar));
+        }
+        
+        ApresentarMensagemSucesso($"O registro ID [{detalhesSalaViewModel.Id}] foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
 
     public IActionResult Detalhes(int id)
     {
-        var sala = repositorioSala.SelecionarPorId(id);
+        var resultado = servicoSala.SelecionarPorId(id);
 
-        if (sala is null)
-            return MensagemRegistroNaoEncontrado(id);
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var sala = resultado.Value;
 
         var detalhesSalaViewModel = new DetalhesSalaViewModel
         {

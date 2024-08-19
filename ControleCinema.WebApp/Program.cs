@@ -1,4 +1,4 @@
-using ControleCinema.Aplicacao.Services;
+using ControleCinema.Aplicacao.Servicos;
 using ControleCinema.Dominio.ModuloFilme;
 using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.Dominio.ModuloSala;
@@ -22,7 +22,7 @@ public class Program
 
         builder.Services.AddControllersWithViews();
 
-        #region Injeção de Dependência de Serviços
+        #region Injeï¿½ï¿½o de Dependï¿½ncia de Serviï¿½os
 
         builder.Services.AddDbContext<ControleCinemaDbContext>();
 
@@ -31,6 +31,9 @@ public class Program
         builder.Services.AddScoped<IRepositorioSala, RepositorioSalaEmOrm>();
         builder.Services.AddScoped<IRepositorioSessao, RepositorioSessaoEmOrm>();
 
+        builder.Services.AddScoped<GeneroService>();
+        builder.Services.AddScoped<FilmeService>();
+        builder.Services.AddScoped<SalaService>();
         builder.Services.AddScoped<SessaoService>();
 
         builder.Services.AddIdentity<Usuario, Perfil>()

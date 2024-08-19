@@ -1,4 +1,5 @@
-﻿using ControleCinema.Dominio.ModuloGenero;
+﻿using ControleCinema.Aplicacao.Servicos;
+using ControleCinema.Dominio.ModuloGenero;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -9,19 +10,27 @@ namespace ControleCinema.WebApp.Controllers;
 [Authorize(Roles = "Empresa")]
 public class GeneroController : WebControllerBase
 {
-    private readonly IRepositorioGenero repositorioGenero;
+    private readonly GeneroService servicoGenero;
 
     public GeneroController(
-        IRepositorioGenero repositorioGenero
+        GeneroService servicoGenero
     )
     {
-        this.repositorioGenero = repositorioGenero;
+        this.servicoGenero = servicoGenero;
     }
 
     public IActionResult Listar()
     {
-        var generos = repositorioGenero
-            .Filtrar(g => g.UsuarioId == UsuarioId);
+        var resultado = servicoGenero.SelecionarTodos(UsuarioId.GetValueOrDefault());
+
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction("Index", "Inicio");
+        }
+
+        var generos = resultado.Value;
 
         var listarGenerosVm = generos
             .Select(f => new ListarGeneroViewModel
@@ -46,34 +55,42 @@ public class GeneroController : WebControllerBase
         if (!ModelState.IsValid)
             return View(inserirGeneroVm);
 
-        var genero = new Genero()
+        var resultado = servicoGenero.Inserir(
+            inserirGeneroVm.Descricao,
+            UsuarioId.GetValueOrDefault()
+        );
+
+        if (resultado.IsFailed)
         {
-            Descricao = inserirGeneroVm.Descricao,
-            UsuarioId = UsuarioId.GetValueOrDefault()
-        };
+            ApresentarMensagemFalha(resultado.ToResult());
 
-        repositorioGenero.Inserir(genero);
+            return RedirectToAction(nameof(Listar));
+        }
 
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
-        {
-            Titulo = "Sucesso",
-            Mensagem = $"O registro ID [{genero.Id}] foi inserido com sucesso!"
-        });
+        var genero = resultado.Value; 
 
+        ApresentarMensagemSucesso($"O registro ID [{genero.Id}] foi inserido com sucesso!");
+        
         return RedirectToAction(nameof(Listar));
     }
 
     public IActionResult Editar(int id)
     {
-        var funcionario = repositorioGenero.SelecionarPorId(id);
+        var resultado = servicoGenero.SelecionarPorId(id);
 
-        if (funcionario is null)
-            return MensagemRegistroNaoEncontrado(id);
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
 
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var genero = resultado.Value;
+        
         var editarGeneroVm = new EditarGeneroViewModel
         {
             Id = id,
-            Descricao = funcionario.Descricao
+            Descricao = genero.Descricao
         };
 
         return View(editarGeneroVm);
@@ -85,27 +102,35 @@ public class GeneroController : WebControllerBase
         if (!ModelState.IsValid)
             return View(editarGeneroVm);
 
-        var genero = repositorioGenero.SelecionarPorId(editarGeneroVm.Id);
-
-        genero!.Descricao = editarGeneroVm.Descricao;
-
-        repositorioGenero.Editar(genero);
-
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
+        var resultado = servicoGenero.Editar(
+            editarGeneroVm.Id,
+            editarGeneroVm.Descricao
+        );
+        
+        if (resultado.IsFailed)
         {
-            Titulo = "Sucesso",
-            Mensagem = $"O registro ID [{genero.Id}] foi editado com sucesso!"
-        });
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction(nameof(Listar));
+        }
+        
+        ApresentarMensagemSucesso($"O registro ID [{editarGeneroVm.Id}] foi editado com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
 
     public IActionResult Excluir(int id)
     {
-        var genero = repositorioGenero.SelecionarPorId(id);
+        var resultado = servicoGenero.SelecionarPorId(id);
 
-        if (genero is null)
-            return MensagemRegistroNaoEncontrado(id);
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var genero = resultado.Value;
 
         var detalhesGeneroViewModel = new DetalhesGeneroViewModel
         {
@@ -119,28 +144,32 @@ public class GeneroController : WebControllerBase
     [HttpPost]
     public IActionResult Excluir(DetalhesGeneroViewModel detalhesGeneroViewModel)
     {
-        var genero = repositorioGenero.SelecionarPorId(detalhesGeneroViewModel.Id);
+        var resultado = servicoGenero.Excluir(detalhesGeneroViewModel.Id);
 
-        if (genero is null)
-            return MensagemRegistroNaoEncontrado(detalhesGeneroViewModel.Id);
-
-        repositorioGenero.Excluir(genero);
-
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
+        if (resultado.IsFailed)
         {
-            Titulo = "Sucesso",
-            Mensagem = $"O registro ID [{genero.Id}] foi exclúido com sucesso!"
-        });
+            ApresentarMensagemFalha(resultado);
+
+            return RedirectToAction(nameof(Listar));
+        }
+
+        ApresentarMensagemSucesso($"O registro ID [{detalhesGeneroViewModel.Id}] foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
 
     public IActionResult Detalhes(int id)
     {
-        var genero = repositorioGenero.SelecionarPorId(id);
+        var resultado = servicoGenero.SelecionarPorId(id);
 
-        if (genero is null)
-            return MensagemRegistroNaoEncontrado(id);
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+
+            return RedirectToAction(nameof(Listar));
+        }
+
+        var genero = resultado.Value;
 
         var detalhesGeneroViewModel = new DetalhesGeneroViewModel
         {
