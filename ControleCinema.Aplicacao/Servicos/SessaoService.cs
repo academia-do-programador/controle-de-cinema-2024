@@ -22,7 +22,7 @@ public class SessaoService
         this.repositorioSessao = repositorioSessao;
     }
 
-    public Result<Sessao> Inserir(DateTime inicio, int numeroMaxIngressos, int salaId, int filmeId, int usuarioId)
+    public Result<Sessao> Inserir(Sessao sessao, int salaId, int filmeId)
     {
         var salaSelecionada = repositorioSala
             .SelecionarPorId(salaId);
@@ -36,14 +36,8 @@ public class SessaoService
         if (filmeSelecionado is null)
             return Result.Fail("O filme não foi selecionado!");
 
-        var sessao = new Sessao()
-        {
-            Sala = salaSelecionada,
-            Filme = filmeSelecionado,
-            Inicio = inicio,
-            NumeroMaximoIngressos = numeroMaxIngressos,
-            UsuarioId = usuarioId
-        };
+        sessao.Sala = salaSelecionada;
+        sessao.Filme = filmeSelecionado;
 
         var erros = sessao.Validar();
 
@@ -110,7 +104,7 @@ public class SessaoService
     {
         if (usuarioId is not null)
             return Result.Ok(repositorioSessao.ObterSessoesAgrupadasPorFilme(usuarioId.Value));
-        
+
         return Result.Ok(repositorioSessao.ObterSessoesAgrupadasPorFilme());
     }
 
@@ -120,7 +114,7 @@ public class SessaoService
 
         return Result.Ok(sessoes);
     }
-    
+
     public Result<List<Ingresso>> SelecionarTodosIngressos(int usuarioId)
     {
         var ingressos = repositorioSessao.SelecionarTodosIngressos(usuarioId);

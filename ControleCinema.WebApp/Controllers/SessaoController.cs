@@ -1,4 +1,5 @@
-﻿using ControleCinema.Aplicacao.Servicos;
+﻿using AutoMapper;
+using ControleCinema.Aplicacao.Servicos;
 using ControleCinema.Dominio.ModuloSessao;
 using ControleCinema.WebApp.Extensions;
 using ControleCinema.WebApp.Models;
@@ -15,6 +16,8 @@ public class SessaoController : WebControllerBase
     private readonly SalaService servicoSala;
     private readonly SessaoService servicoSessao;
 
+    private readonly IMapper mapeador;
+
     public SessaoController(
         FilmeService servicoFilme,
         SalaService servicoSala,
@@ -24,6 +27,31 @@ public class SessaoController : WebControllerBase
         this.servicoFilme = servicoFilme;
         this.servicoSala = servicoSala;
         this.servicoSessao = servicoSessao;
+
+        var autoMapperConfig = new MapperConfiguration(cfg =>
+        {
+            cfg.CreateMap<InserirSessaoViewModel, Sessao>();
+
+            cfg.CreateMap<Sessao, ListarSessaoViewModel>()
+                .ForMember(dest => dest.Filme, opt => opt.MapFrom(src => src.Filme.Titulo))
+                .ForMember(dest => dest.Sala, opt => opt.MapFrom(src => src.Sala.Numero.ToString()))
+                .ForMember(dest => dest.IngressosDisponiveis,
+                    opt => opt.MapFrom(src => src.ObterQuantidadeIngressosDisponiveis()))
+                .ForMember(dest => dest.Inicio, opt => opt.MapFrom(src => src.Inicio.ToString("dd/MM/yyyy HH:mm")))
+                .ForMember(dest => dest.Encerrada,
+                    opt => opt.MapFrom(src => src.Encerrada ? "Encerrada" : "Disponível"));
+
+            cfg.CreateMap<Sessao, DetalhesSessaoViewModel>()
+                .ForMember(dest => dest.Filme, opt => opt.MapFrom(src => src.Filme.Titulo))
+                .ForMember(dest => dest.Sala, opt => opt.MapFrom(src => src.Sala.Numero.ToString()))
+                .ForMember(dest => dest.IngressosDisponiveis,
+                    opt => opt.MapFrom(src => src.ObterQuantidadeIngressosDisponiveis()))
+                .ForMember(dest => dest.Inicio, opt => opt.MapFrom(src => src.Inicio.ToString("dd/MM/yyyy HH:mm")))
+                .ForMember(dest => dest.Encerrada,
+                    opt => opt.MapFrom(src => src.Encerrada ? "Encerrada" : "Disponível"));
+        });
+
+        mapeador = autoMapperConfig.CreateMapper();
     }
 
     [Authorize(Roles = "Empresa")]
@@ -40,7 +68,7 @@ public class SessaoController : WebControllerBase
         }
 
         var agrupamentos = resultado.Value;
-        
+
         var agrupamentosSessoesVm = agrupamentos
             .Select(MapearAgrupamentoSessoes);
 
@@ -61,13 +89,14 @@ public class SessaoController : WebControllerBase
         if (!ModelState.IsValid)
             return View(CarregarInformacoes(inserirSessaoVm));
 
-        var resultado = servicoSessao.Inserir(
-            inserirSessaoVm.Inicio,
-            inserirSessaoVm.NumeroMaximoIngressos,
-            inserirSessaoVm.SalaId,
-            inserirSessaoVm.FilmeId,
-            UsuarioId.GetValueOrDefault()
-        );
+        var sessao = mapeador.Map<Sessao>(inserirSessaoVm);
+
+        sessao.UsuarioId = UsuarioId.GetValueOrDefault();
+
+        var salaId = inserirSessaoVm.SalaId;
+        var filmeId = inserirSessaoVm.FilmeId;
+
+        var resultado = servicoSessao.Inserir(sessao, salaId, filmeId);
 
         if (resultado.IsFailed)
         {
@@ -85,7 +114,7 @@ public class SessaoController : WebControllerBase
     public IActionResult Encerrar(int id)
     {
         var resultado = servicoSessao.SelecionarPorId(id);
-        
+
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
@@ -95,7 +124,7 @@ public class SessaoController : WebControllerBase
 
         var sessao = resultado.Value;
 
-        var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
+        var detalhesSessaoViewModel = mapeador.Map<DetalhesSessaoViewModel>(sessao);
 
         return View(detalhesSessaoViewModel);
     }
@@ -121,7 +150,7 @@ public class SessaoController : WebControllerBase
     public IActionResult Excluir(int id)
     {
         var resultado = servicoSessao.SelecionarPorId(id);
-        
+
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
@@ -131,7 +160,7 @@ public class SessaoController : WebControllerBase
 
         var sessao = resultado.Value;
 
-        var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
+        var detalhesSessaoViewModel = mapeador.Map<DetalhesSessaoViewModel>(sessao);
 
         return View(detalhesSessaoViewModel);
     }
@@ -157,17 +186,17 @@ public class SessaoController : WebControllerBase
     public IActionResult Detalhes(int id)
     {
         var resultado = servicoSessao.SelecionarPorId(id);
-        
+
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
 
             return RedirectToAction(nameof(Listar));
         }
-        
+
         var sessao = resultado.Value;
 
-        var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
+        var detalhesSessaoViewModel = mapeador.Map<DetalhesSessaoViewModel>(sessao);
 
         return View(detalhesSessaoViewModel);
     }
@@ -177,17 +206,17 @@ public class SessaoController : WebControllerBase
     public IActionResult ComprarIngresso(int id)
     {
         var resultado = servicoSessao.SelecionarPorId(id);
-        
+
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
 
             return RedirectToAction(nameof(Listar));
         }
-        
+
         var sessao = resultado.Value;
 
-        var detalhesSessaoViewModel = MapearDetalhesSessao(sessao);
+        var detalhesSessaoViewModel = mapeador.Map<DetalhesSessaoViewModel>(sessao);
 
         var comprarIngressoVm = new ComprarIngressoViewModel
         {
@@ -247,36 +276,14 @@ public class SessaoController : WebControllerBase
         return inserirSessaoVm;
     }
 
-    private static AgrupamentoSessoesPorFilmeViewModel MapearAgrupamentoSessoes(IGrouping<string, Sessao> grp)
+    private AgrupamentoSessoesPorFilmeViewModel MapearAgrupamentoSessoes(IGrouping<string, Sessao> grp)
     {
         return new AgrupamentoSessoesPorFilmeViewModel
         {
             Filme = grp.Key,
-            Sessoes = grp.Select(s => new ListarSessaoViewModel
-            {
-                Id = s.Id,
-                Filme = grp.Key,
-                Sala = s.Sala.Numero.ToString(),
-                IngressosDisponiveis = s.ObterQuantidadeIngressosDisponiveis(),
-                Inicio = s.Inicio.ToString("dd/MM/yyyy HH:mm"),
-                Encerrada = s.Encerrada ? "Encerrada" : "Disponível"
-            })
+            Sessoes = mapeador.Map<IEnumerable<ListarSessaoViewModel>>(grp)
                 .OrderBy(s => s.Encerrada)
                 .ThenBy(s => s.Inicio)
-        };
-    }
-
-    private static DetalhesSessaoViewModel MapearDetalhesSessao(Sessao sessao)
-    {
-        return new DetalhesSessaoViewModel
-        {
-            Id = sessao.Id,
-            Sala = sessao.Sala.Numero.ToString(),
-            Filme = sessao.Filme.Titulo,
-            Inicio = sessao.Inicio.ToString("dd/MM/yyyy HH:mm"),
-            Encerrada = sessao.Encerrada ? "Encerrada" : "Disponível",
-            NumeroMaximoIngressos = sessao.NumeroMaximoIngressos,
-            IngressosDisponiveis = sessao.ObterQuantidadeIngressosDisponiveis()
         };
     }
 }
