@@ -85,11 +85,7 @@ public class GeneroController : WebControllerBase
 
         var genero = resultado.Value;
 
-        var editarGeneroVm = new EditarGeneroViewModel
-        {
-            Id = id,
-            Descricao = genero.Descricao
-        };
+        var editarGeneroVm = mapeador.Map<EditarGeneroViewModel>(genero);
 
         return View(editarGeneroVm);
     }

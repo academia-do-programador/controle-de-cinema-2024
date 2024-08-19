@@ -32,11 +32,13 @@ public class InicioController : WebControllerBase
 
     public ViewResult Index()
     {
-        var resultadoAgrupamentos = servicoSessao.ObterSessoesAgrupadasPorFilme();
+        var resultadoAgrupamentos = 
+            servicoSessao.ObterSessoesAgrupadasPorFilme();
 
         var agrupamentos = resultadoAgrupamentos.Value;
 
-        var agrupamentosSessoesVm = agrupamentos.Select(MapearAgrupamentoSessoes);
+        var agrupamentosSessoesVm = 
+            agrupamentos.Select(MapearAgrupamentoSessoes);
 
         ViewBag.Agrupamentos = agrupamentosSessoesVm;
 

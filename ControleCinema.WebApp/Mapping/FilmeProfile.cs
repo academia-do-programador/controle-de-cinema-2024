@@ -15,7 +15,6 @@ public class FilmeProfile : Profile
         CreateMap<Filme, EditarFilmeViewModel>()
             .ForMember(dest => dest.GeneroId, opt => opt.MapFrom(src => src.Genero.Id));
 
-
         CreateMap<Filme, ListarFilmeViewModel>()
             .ForMember(dest => dest.Duracao, opt => opt.MapFrom(src => src.Duracao.FormatarEmHorasEMinutos()))
             .ForMember(dest => dest.Lancamento, opt => opt.MapFrom(src => src.Lancamento ? "Lançamento" : "Re-Exibição"))

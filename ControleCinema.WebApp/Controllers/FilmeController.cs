@@ -19,7 +19,9 @@ public class FilmeController : WebControllerBase
 
     public FilmeController(
         FilmeService filmeService,
-        GeneroService generoService, IMapper mapeador)
+        GeneroService generoService, 
+        IMapper mapeador
+    )
     {
         this.filmeService = filmeService;
         this.generoService = generoService;
@@ -28,7 +30,8 @@ public class FilmeController : WebControllerBase
 
     public IActionResult Listar()
     {
-        var resultado = filmeService.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultado = 
+            filmeService.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultado.IsFailed)
         {
@@ -39,15 +42,7 @@ public class FilmeController : WebControllerBase
 
         var filmes = resultado.Value;
 
-        var listarFilmesVm = filmes
-            .Select(f => new ListarFilmeViewModel
-            {
-                Id = f.Id,
-                Titulo = f.Titulo,
-                Duracao = f.Duracao.FormatarEmHorasEMinutos(),
-                Lancamento = f.Lancamento ? "Lançamento" : "Re-Exibição",
-                Genero = f.Genero.Descricao
-            });
+        var listarFilmesVm = mapeador.Map<IEnumerable<ListarFilmeViewModel>>(filmes);
 
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
@@ -66,6 +61,8 @@ public class FilmeController : WebControllerBase
             return View(CarregarInformacoesFilme(inserirFilmeVm));
 
         var filme = mapeador.Map<Filme>(inserirFilmeVm);
+
+        filme.UsuarioId = UsuarioId.GetValueOrDefault();
 
         var generoId = inserirFilmeVm.GeneroId;
 
@@ -99,7 +96,9 @@ public class FilmeController : WebControllerBase
 
         var generos = resultadoGenero.Value;
 
-        var editarFilmeVm = mapeador.Map<EditarFilmeViewModel>(resultadoFilme.Value);
+        var filme = resultadoFilme.Value;
+
+        var editarFilmeVm = mapeador.Map<EditarFilmeViewModel>(filme);
 
         editarFilmeVm.Generos = generos
             .Select(g => new SelectListItem(g.Descricao, g.Id.ToString()));

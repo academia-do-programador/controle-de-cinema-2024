@@ -22,8 +22,8 @@ public class SalaController : WebControllerBase
 
     public IActionResult Listar()
     {
-        var resultado = servicoSala
-            .SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultado = 
+            servicoSala.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultado.IsFailed)
         {

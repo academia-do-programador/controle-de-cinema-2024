@@ -15,7 +15,6 @@ public class SessaoController : WebControllerBase
     private readonly FilmeService servicoFilme;
     private readonly SalaService servicoSala;
     private readonly SessaoService servicoSessao;
-
     private readonly IMapper mapeador;
 
     public SessaoController(
@@ -34,8 +33,8 @@ public class SessaoController : WebControllerBase
     [Authorize(Roles = "Empresa")]
     public IActionResult Listar()
     {
-        var resultado = servicoSessao
-            .ObterSessoesAgrupadasPorFilme(UsuarioId.GetValueOrDefault());
+        var resultado = 
+            servicoSessao.ObterSessoesAgrupadasPorFilme(UsuarioId.GetValueOrDefault());
 
         if (resultado.IsFailed)
         {
